@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "993632385056",
+    "project_id": "fbkotlin-ae08d",
+    "storage_bucket": "fbkotlin-ae08d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:993632385056:android:83bc3ba6acd879c8d86445",
+        "android_client_info": {
+          "package_name": "ru.auskov.fbkotlin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyLNU1tgAnq9aiumLq8QpQ6l7hFQ6psWM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
