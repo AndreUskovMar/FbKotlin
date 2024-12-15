@@ -5,8 +5,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +32,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import android.net.Uri
+import androidx.activity.result.PickVisualMediaRequest
 import coil3.compose.AsyncImage
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -61,6 +65,20 @@ fun MainScreen() {
     val list = remember {
         mutableStateOf(emptyList<Book>())
     }
+
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (uri == null) return@rememberLauncherForActivityResult
+
+            val task = storage.child("book.png").putBytes(
+                bitmapToByteArray(context, uri)
+            )
+            task.addOnSuccessListener {
+                it.metadata?.reference?.downloadUrl?.addOnCompleteListener { url ->
+                    saveBook(fs, url.result.toString())
+                }
+            }
+        }
 
 //    fs.collection("books").get().addOnCompleteListener {
 //        if (it.isSuccessful) {
@@ -117,14 +135,9 @@ fun MainScreen() {
         Button(modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp), onClick = {
-            val task = storage.child("book.png").putBytes(
-                bitmapToByteArray(context)
-            )
-            task.addOnSuccessListener {
-                it.metadata?.reference?.downloadUrl?.addOnCompleteListener { url ->
-                    saveBook(fs, url.result.toString())
-                }
-            }
+            launcher.launch(PickVisualMediaRequest(
+                mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+            ))
         }) {
             Text(
                 text = "Add book",
@@ -134,8 +147,10 @@ fun MainScreen() {
 
 }
 
-private fun bitmapToByteArray(context: Context): ByteArray {
-    val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.book)
+private fun bitmapToByteArray(context: Context, uri: Uri): ByteArray {
+    val inputStream = context.contentResolver.openInputStream(uri)
+    val bitmap = BitmapFactory.decodeStream(inputStream)
+    // val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.book)
     val baos = ByteArrayOutputStream()
     bitmap.compress(Bitmap.CompressFormat.PNG, 50, baos)
     return baos.toByteArray()
