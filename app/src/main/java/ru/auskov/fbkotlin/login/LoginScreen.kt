@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -32,6 +33,8 @@ fun LoginScreen() {
     val password = remember {
         mutableStateOf("")
     }
+
+    Log.d("MyLog", "User signed in with email: ${auth.currentUser?.email}")
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -53,10 +56,39 @@ fun LoginScreen() {
             })
         }
 
-        Button(onClick = {
-            signUp(auth, email.value, password.value)
-        }) {
-            Text("Sign Up")
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Button(onClick = {
+                signIn(auth, email.value, password.value)
+            }) {
+                Text("Sign In")
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(onClick = {
+                signUp(auth, email.value, password.value)
+            }) {
+                Text("Sign Up")
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(onClick = {
+                logout(auth)
+            }) {
+                Text("Logout")
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(onClick = {
+                deleteAccount(auth, email.value, password.value)
+            }) {
+                Text("Delete")
+            }
         }
     }
 }
@@ -73,4 +105,47 @@ private fun signUp(auth: FirebaseAuth, email: String, password: String) {
                 Log.w("MyLog", "createUserWithEmail:failure", task.exception)
             }
         }
+}
+
+private fun signIn(auth: FirebaseAuth, email: String, password: String) {
+    auth.signInWithEmailAndPassword(email, password)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // Sign in success, update UI with the signed-in user's information
+                Log.d("MyLog", "signInWithEmail:success")
+                // val user = auth.currentUser
+            } else {
+                // If sign in fails, display a message to the user.
+                Log.w("MyLog", "signInWithEmail:failure", task.exception)
+            }
+        }
+}
+
+private fun logout(auth: FirebaseAuth) {
+    auth.signOut()
+}
+
+private fun deleteAccount(auth: FirebaseAuth, email: String, password: String) {
+    if (auth.currentUser !== null) {
+        val credentials = EmailAuthProvider.getCredential(email, password)
+
+        auth.currentUser?.reauthenticate(credentials)
+            ?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    auth.currentUser?.delete()!!
+                        .addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d("MyLog", "delete:success")
+                                // val user = auth.currentUser
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Log.w("MyLog", "delete:failure", it.exception)
+                            }
+                        }
+                } else {
+                    Log.w("MyLog", "reauthenticate:failure", task.exception)
+                }
+            }
+    }
 }
