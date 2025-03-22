@@ -11,14 +11,14 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import ru.auskov.fbkotlin.login.data.MainScreenDataObject
 import ru.auskov.fbkotlin.main.components.BottomMenu
 import ru.auskov.fbkotlin.main.components.DrawerHeader
 import ru.auskov.fbkotlin.main.components.DrawerList
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Preview(showBackground = true)
 @Composable
-fun MainScreen() {
+fun MainScreen(navData: MainScreenDataObject) {
     val drawerState = rememberDrawerState(DrawerValue.Open)
 
     ModalNavigationDrawer(
@@ -26,7 +26,7 @@ fun MainScreen() {
         modifier = Modifier.fillMaxWidth(),
         drawerContent = {
             Column(modifier = Modifier.fillMaxWidth(0.7f)) {
-                DrawerHeader()
+                DrawerHeader(navData.email)
                 DrawerList()
             }
         },

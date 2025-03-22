@@ -22,7 +22,7 @@ import ru.auskov.fbkotlin.R
 import ru.auskov.fbkotlin.ui.theme.Purple40
 
 @Composable
-fun DrawerHeader() {
+fun DrawerHeader(email: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -45,6 +45,11 @@ fun DrawerHeader() {
             fontSize = 25.sp,
             color = Purple40,
             fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = email,
+            fontSize = 15.sp,
+            color = Color.Black,
         )
     }
 }
