@@ -8,6 +8,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import ru.auskov.fbkotlin.add_book_screen.AddBookScreen
+import ru.auskov.fbkotlin.add_book_screen.data.AddBookScreenObject
 import ru.auskov.fbkotlin.login.LoginScreen
 import ru.auskov.fbkotlin.login.data.LoginScreenObject
 import ru.auskov.fbkotlin.login.data.MainScreenDataObject
@@ -23,7 +25,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             FbKotlinTheme {
-                NavHost(navController = navController, startDestination = LoginScreenObject) {
+                NavHost(navController = navController, startDestination = AddBookScreenObject) {
                     composable<LoginScreenObject> {
                         LoginScreen { navData ->
                             navController.navigate(navData)
@@ -32,6 +34,9 @@ class MainActivity : ComponentActivity() {
                     composable<MainScreenDataObject> { navEntry ->
                         val navData = navEntry.toRoute<MainScreenDataObject>()
                         MainScreen(navData)
+                    }
+                    composable<AddBookScreenObject> {
+                        AddBookScreen()
                     }
                 }
             }

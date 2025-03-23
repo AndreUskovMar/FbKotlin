@@ -16,6 +16,8 @@ import ru.auskov.fbkotlin.ui.theme.LightGreen
 fun RoundedTextInput(
     label: String,
     value: String,
+    singleLine: Boolean = true,
+    maxLines: Int = 1,
     onValueChange: (String) -> Unit
 ) {
     TextField(
@@ -35,6 +37,7 @@ fun RoundedTextInput(
         label = {
             Text(text = label, color = Color.Gray)
         },
-        singleLine = true
+        singleLine = singleLine,
+        maxLines = maxLines
     )
 }
