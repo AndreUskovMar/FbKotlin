@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             FbKotlinTheme {
-                NavHost(navController = navController, startDestination = AddBookScreenObject) {
+                NavHost(navController = navController, startDestination = LoginScreenObject) {
                     composable<LoginScreenObject> {
                         LoginScreen { navData ->
                             navController.navigate(navData)
@@ -33,10 +33,14 @@ class MainActivity : ComponentActivity() {
                     }
                     composable<MainScreenDataObject> { navEntry ->
                         val navData = navEntry.toRoute<MainScreenDataObject>()
-                        MainScreen(navData)
+                        MainScreen(navData) {
+                            navController.navigate(AddBookScreenObject)
+                        }
                     }
                     composable<AddBookScreenObject> {
-                        AddBookScreen()
+                        AddBookScreen {
+                            navController.popBackStack()
+                        }
                     }
                 }
             }

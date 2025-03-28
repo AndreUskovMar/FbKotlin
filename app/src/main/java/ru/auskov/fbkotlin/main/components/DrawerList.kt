@@ -29,7 +29,9 @@ import ru.auskov.fbkotlin.R
 import ru.auskov.fbkotlin.ui.theme.LightGreen
 
 @Composable
-fun DrawerList() {
+fun DrawerList(
+    onAdminClick: () -> Unit
+) {
     val listItems = listOf(
         "Favourites",
         "Fantasy",
@@ -71,7 +73,7 @@ fun DrawerList() {
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 5.dp, vertical = 10.dp),
                 colors = ButtonDefaults.buttonColors(LightGreen),
                 onClick = {
-
+                    onAdminClick()
                 }
             ) {
                 Text("Admin Panel", color = Color.Blue)
