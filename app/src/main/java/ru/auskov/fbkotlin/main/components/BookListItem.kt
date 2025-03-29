@@ -13,20 +13,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import ru.auskov.fbkotlin.R
+import ru.auskov.fbkotlin.data.Book
 
 @Composable
-fun BookListItem() {
+fun BookListItem(book: Book) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
     ) {
         AsyncImage(
-            model = R.drawable.bonevtik,
+            model = book.imageUrl,
             contentDescription = "Bonevtik Potujniy",
             modifier = Modifier
                 .fillMaxWidth()
@@ -38,7 +39,7 @@ fun BookListItem() {
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = "Ухилес Потужный - Боневтик",
+            text = book.name,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White
@@ -47,16 +48,17 @@ fun BookListItem() {
         Spacer(modifier = Modifier.height(5.dp))
 
         Text(
-            text = "Потужна потужнисть потужного лид@ра потужно потужить " +
-                    "потужный нарид. Нарид - вси на фринт!!!",
+            text = book.description,
             fontSize = 13.sp,
-            color = Color.Gray
+            color = Color.Gray,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis
         )
 
         Spacer(modifier = Modifier.height(5.dp))
 
         Text(
-            text = "200$",
+            text = book.price,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Blue
