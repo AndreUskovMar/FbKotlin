@@ -1,5 +1,6 @@
 package ru.auskov.fbkotlin.add_book_screen
 
+import android.content.ContentResolver
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,12 +28,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
+// import com.google.firebase.storage.FirebaseStorage
 import ru.auskov.fbkotlin.components.RoundedButton
 import ru.auskov.fbkotlin.components.RoundedDropDownMenu
 import ru.auskov.fbkotlin.components.RoundedTextInput
 import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.ui.theme.Purple40
+import android.util.Base64
+import androidx.compose.ui.platform.LocalContext
 
 @Preview(showBackground = true)
 @Composable
@@ -45,9 +48,11 @@ fun AddBookScreen(
         FirebaseFirestore.getInstance()
     }
 
-    val storage = remember {
-        FirebaseStorage.getInstance()
-    }
+//    val storage = remember {
+//        FirebaseStorage.getInstance()
+//    }
+
+    val cr = LocalContext.current.contentResolver
 
     val title = remember {
         mutableStateOf("")
@@ -152,16 +157,18 @@ fun AddBookScreen(
             Spacer(modifier = Modifier.height(10.dp))
 
             RoundedButton(name = "Save New Book") {
-                saveBookImage(
-                    uri = imageUri.value as Uri,
+                saveBookToFireStore(
+                    firestore,
                     book = Book(
                         name = title.value,
                         description = description.value,
                         price = price.value,
-                        category = selectedCategory
+                        category = selectedCategory,
+                        imageUrl = convertImageToBase64(
+                            imageUri.value as Uri,
+                            cr
+                        )
                     ),
-                    storage = storage,
-                    firestore = firestore,
                     onSuccess = {
                         onSavedSuccess()
                     },
@@ -174,6 +181,17 @@ fun AddBookScreen(
     }
 }
 
+private fun convertImageToBase64(uri: Uri, contentResolver: ContentResolver): String {
+    val inputStream = contentResolver.openInputStream(uri)
+
+    val bytes = inputStream?.readBytes()
+
+    return bytes?.let {
+        Base64.encodeToString(it, Base64.DEFAULT)
+    } ?: ""
+}
+
+/**
 private fun saveBookImage(
     uri: Uri,
     book: Book,
@@ -205,10 +223,10 @@ private fun saveBookImage(
         }
     }
 }
+**/
 
 private fun saveBookToFireStore(
     firestore: FirebaseFirestore,
-    url: String,
     book: Book,
     onSuccess: () -> Unit,
     onError: () -> Unit,
@@ -218,10 +236,7 @@ private fun saveBookToFireStore(
 
     db.document(key)
         .set(
-            book.copy(
-                key = key,
-                imageUrl = url,
-            )
+            book.copy(key = key)
         )
         .addOnSuccessListener {
             onSuccess()
