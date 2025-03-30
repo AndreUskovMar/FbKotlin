@@ -4,13 +4,19 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -24,7 +30,11 @@ import coil3.compose.AsyncImage
 import ru.auskov.fbkotlin.data.Book
 
 @Composable
-fun BookListItem(book: Book) {
+fun BookListItem(
+    isAdminState: Boolean,
+    book: Book,
+    onEditBook: (Book) -> Unit
+) {
     var bitmap: Bitmap? = null
 
     try {
@@ -70,11 +80,25 @@ fun BookListItem(book: Book) {
 
         Spacer(modifier = Modifier.height(5.dp))
 
-        Text(
-            text = book.price,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Blue
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = book.price,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Blue,
+                modifier = Modifier.fillMaxWidth().weight(1f)
+            )
+
+            if (isAdminState) IconButton(
+                onClick = {
+                    onEditBook(book)
+                }
+            ) {
+                Icon(Icons.Default.Edit, contentDescription = "Edit")
+            }
+        }
     }
 }

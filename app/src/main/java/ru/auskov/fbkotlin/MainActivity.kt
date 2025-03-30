@@ -1,6 +1,7 @@
 package ru.auskov.fbkotlin
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -33,12 +34,26 @@ class MainActivity : ComponentActivity() {
                     }
                     composable<MainScreenDataObject> { navEntry ->
                         val navData = navEntry.toRoute<MainScreenDataObject>()
-                        MainScreen(navData) {
-                            navController.navigate(AddBookScreenObject)
+                        MainScreen(
+                            navData,
+                            onBookEditClick = { book ->
+                                navController.navigate(AddBookScreenObject(
+                                    book.key,
+                                    book.name,
+                                    book.description,
+                                    book.category,
+                                    book.price,
+                                    book.imageUrl,
+                                ))
+                            }
+                        ) {
+                            navController.navigate(AddBookScreenObject())
                         }
                     }
-                    composable<AddBookScreenObject> {
-                        AddBookScreen {
+                    composable<AddBookScreenObject> {navEntry ->
+                        val navData = navEntry.toRoute<AddBookScreenObject>()
+                        AddBookScreen(navData) {
+                            Log.d("MyLog", "Success")
                             navController.popBackStack()
                         }
                     }

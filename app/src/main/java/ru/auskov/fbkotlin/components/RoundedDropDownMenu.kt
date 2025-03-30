@@ -21,6 +21,7 @@ import ru.auskov.fbkotlin.ui.theme.LightGreen
 
 @Composable
 fun RoundedDropDownMenu(
+    category: String,
     onOptionSelected: (String) -> Unit
 ) {
     val listItems = listOf(
@@ -34,7 +35,7 @@ fun RoundedDropDownMenu(
     }
 
     val selectedItem = remember {
-        mutableStateOf(listItems[0])
+        mutableStateOf(if (category.isNotEmpty()) category else listItems[1])
     }
 
     Box (

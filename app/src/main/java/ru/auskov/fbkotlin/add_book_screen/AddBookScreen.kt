@@ -23,7 +23,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
@@ -36,13 +35,14 @@ import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.ui.theme.Purple40
 import android.util.Base64
 import androidx.compose.ui.platform.LocalContext
+import ru.auskov.fbkotlin.add_book_screen.data.AddBookScreenObject
 
-@Preview(showBackground = true)
 @Composable
 fun AddBookScreen(
+    navData: AddBookScreenObject = AddBookScreenObject(),
     onSavedSuccess: () -> Unit = {}
 ) {
-    var selectedCategory = "Fantasy"
+    var selectedCategory = navData.category
 
     val firestore = remember {
         FirebaseFirestore.getInstance()
@@ -55,15 +55,15 @@ fun AddBookScreen(
     val cr = LocalContext.current.contentResolver
 
     val title = remember {
-        mutableStateOf("")
+        mutableStateOf(navData.name)
     }
 
     val description = remember {
-        mutableStateOf("")
+        mutableStateOf(navData.description)
     }
 
     val price = remember {
-        mutableStateOf("")
+        mutableStateOf(navData.price)
     }
 
     val imageUri = remember {
@@ -108,6 +108,7 @@ fun AddBookScreen(
         )
 
         RoundedDropDownMenu(
+            category = navData.category,
             onOptionSelected = { category ->
                 selectedCategory = category
             }

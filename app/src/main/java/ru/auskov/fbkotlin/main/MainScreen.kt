@@ -19,8 +19,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import com.google.firebase.Firebase
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.ktx.firestore
 import kotlinx.coroutines.launch
 import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.login.data.MainScreenDataObject
@@ -32,6 +34,7 @@ import ru.auskov.fbkotlin.main.components.DrawerList
 @Composable
 fun MainScreen(
     navData: MainScreenDataObject,
+    onBookEditClick: (Book) -> Unit,
     onAdminClick: () -> Unit
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -40,6 +43,16 @@ fun MainScreen(
     }
 
     val coroutineScope = rememberCoroutineScope()
+
+    val isAdminState = remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(Unit) {
+        isAdmin { isAdmin ->
+            isAdminState.value = isAdmin
+        }
+    }
 
     LaunchedEffect(Unit) {
         val db = Firebase.firestore
@@ -54,7 +67,7 @@ fun MainScreen(
         drawerContent = {
             Column(modifier = Modifier.fillMaxWidth(0.7f)) {
                 DrawerHeader(navData.email)
-                DrawerList {
+                DrawerList(isAdminState.value) {
                     coroutineScope.launch {
                         drawerState.close()
                     }
@@ -76,11 +89,24 @@ fun MainScreen(
                     .padding(paddingValue)
             ) {
                 items(booksList.value) { book ->
-                    BookListItem(book)
+                    BookListItem(isAdminState.value, book) {
+                        onBookEditClick(book)
+                    }
                 }
             }
         }
     }
+}
+
+fun isAdmin(onAdmin: (Boolean) -> Unit) {
+    val uid = com.google.firebase.ktx.Firebase.auth.currentUser!!.uid
+
+    com.google.firebase.ktx.Firebase.firestore.collection("admin")
+        .document(uid).get().addOnSuccessListener {
+            Log.d("MyLog", "is admin: ${it.get("isAdmin")}")
+
+            onAdmin(it.get("isAdmin") as Boolean)
+        }
 }
 
 private fun getBooksList(
