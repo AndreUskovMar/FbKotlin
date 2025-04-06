@@ -1,7 +1,7 @@
 package ru.auskov.fbkotlin.add_book_screen
 
-import android.content.ContentResolver
-import android.graphics.BitmapFactory
+//import android.content.ContentResolver
+//import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,16 +28,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import com.google.firebase.firestore.FirebaseFirestore
-// import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.FirebaseStorage
 import ru.auskov.fbkotlin.components.RoundedButton
 import ru.auskov.fbkotlin.components.RoundedDropDownMenu
 import ru.auskov.fbkotlin.components.RoundedTextInput
 import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.ui.theme.Purple40
-import android.util.Base64
+//import android.util.Base64
 import android.util.Log
-import androidx.compose.ui.platform.LocalContext
-import coil3.Bitmap
+//import androidx.compose.ui.platform.LocalContext
+//import coil3.Bitmap
 import ru.auskov.fbkotlin.add_book_screen.data.AddBookScreenObject
 
 @Composable
@@ -49,11 +49,11 @@ fun AddBookScreen(
         FirebaseFirestore.getInstance()
     }
 
-//    val storage = remember {
-//        FirebaseStorage.getInstance()
-//    }
+    val storage = remember {
+        FirebaseStorage.getInstance()
+    }
 
-    val cr = LocalContext.current.contentResolver
+    // val cr = LocalContext.current.contentResolver
 
     val category = remember {
         mutableStateOf(navData.category)
@@ -71,33 +71,39 @@ fun AddBookScreen(
         mutableStateOf(navData.price)
     }
 
+    val navImageUrl = remember {
+        mutableStateOf(navData.imageUrl)
+    }
+
     val imageUri = remember {
         mutableStateOf<Uri?>(null)
     }
 
-    val imageBitmap = remember {
-        var bitmap: Bitmap? = null
-
-        try {
-            val base64Image = Base64.decode(navData.imageUrl, Base64.DEFAULT)
-            bitmap = BitmapFactory.decodeByteArray(base64Image, 0, base64Image.size)
-        } catch (e: IllegalArgumentException) {
-            Log.d("MyLog", e.message.toString())
-        }
-
-        mutableStateOf(bitmap)
-    }
+    //    val imageBitmap = remember {
+    //        var bitmap: Bitmap? = null
+    //
+    //        try {
+    //            val base64Image = Base64.decode(navData.imageUrl, Base64.DEFAULT)
+    //            bitmap = BitmapFactory.decodeByteArray(base64Image, 0, base64Image.size)
+    //        } catch (e: IllegalArgumentException) {
+    //            Log.d("MyLog", e.message.toString())
+    //        }
+    //
+    //        mutableStateOf(bitmap)
+    //    }
 
     val imageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-        imageBitmap.value = null
+        // imageBitmap.value = null
+        navImageUrl.value = ""
         imageUri.value = uri
     }
 
     Image(
         painter = rememberAsyncImagePainter(
-            model = imageBitmap.value ?: imageUri.value
+            // model = imageBitmap.value ?: imageUri.value
+            model = navImageUrl.value.ifEmpty { imageUri.value }
         ),
         contentDescription = "Add Book",
         modifier = Modifier.fillMaxSize(),
@@ -179,45 +185,67 @@ fun AddBookScreen(
             Spacer(modifier = Modifier.height(10.dp))
 
             RoundedButton(name = "Save New Book") {
-                val imageBase64 = if (imageUri.value != null ) convertImageToBase64(
-                    imageUri.value as Uri,
-                    cr
-                ) else navData.imageUrl
-
-                saveBookToFireStore(
-                    firestore,
-                    book = Book(
-                        key = navData.key,
-                        name = title.value,
-                        description = description.value,
-                        price = price.value,
-                        category = category.value,
-                        imageUrl = imageBase64
-                    ),
-                    onSuccess = {
-                        onSavedSuccess()
-                    },
-                    onError = {
-
-                    }
+                val book = Book(
+                    key = navData.key,
+                    name = title.value,
+                    description = description.value,
+                    price = price.value,
+                    category = category.value
                 )
+
+                // val imageBase64 = if (imageUri.value != null ) convertImageToBase64(
+                //     imageUri.value as Uri,
+                //     cr
+                // ) else navData.imageUrl
+
+                if (imageUri.value != null) {
+                    //  convertImageToBase64(
+                    //      imageUri.value as Uri,
+                    //      cr
+                    //  )
+
+                    saveBookImage(
+                        prevImageUrl = navData.imageUrl,
+                        uri = imageUri.value as Uri,
+                        book = book,
+                        storage = storage,
+                        firestore = firestore,
+                        onSuccess = {
+                            onSavedSuccess()
+                        },
+                        onError = {
+
+                        }
+                    )
+                } else {
+                    saveBookToFireStore(
+                        firestore,
+                        book = book.copy(imageUrl = navData.imageUrl),
+                        onSuccess = {
+                            onSavedSuccess()
+                        },
+                        onError = {
+
+                        }
+                    )
+                }
             }
         }
     }
 }
 
-private fun convertImageToBase64(uri: Uri, contentResolver: ContentResolver): String {
-    val inputStream = contentResolver.openInputStream(uri)
+//private fun convertImageToBase64(uri: Uri, contentResolver: ContentResolver): String {
+//    val inputStream = contentResolver.openInputStream(uri)
+//
+//    val bytes = inputStream?.readBytes()
+//
+//    return bytes?.let {
+//        Base64.encodeToString(it, Base64.DEFAULT)
+//    } ?: ""
+//}
 
-    val bytes = inputStream?.readBytes()
-
-    return bytes?.let {
-        Base64.encodeToString(it, Base64.DEFAULT)
-    } ?: ""
-}
-
-/**
 private fun saveBookImage(
+    prevImageUrl: String,
     uri: Uri,
     book: Book,
     storage: FirebaseStorage,
@@ -226,9 +254,13 @@ private fun saveBookImage(
     onError: () -> Unit,
 ) {
     val timestamp = System.currentTimeMillis()
-    val storageRef = storage.reference
-        .child("book_images")
-        .child("image_$timestamp.png")
+    val storageRef = if (prevImageUrl.isEmpty()) {
+        storage.reference
+            .child("book_images")
+            .child("image_$timestamp.png")
+    } else {
+        storage.getReferenceFromUrl(prevImageUrl)
+    }
 
     val uploadTask = storageRef.putFile(uri)
 
@@ -236,8 +268,7 @@ private fun saveBookImage(
         storageRef.downloadUrl.addOnSuccessListener { url ->
             saveBookToFireStore(
                 firestore = firestore,
-                url = url.toString(),
-                book = book,
+                book = book.copy(imageUrl = url.toString()),
                 onSuccess = {
                     onSuccess()
                 },
@@ -248,7 +279,6 @@ private fun saveBookImage(
         }
     }
 }
-**/
 
 private fun saveBookToFireStore(
     firestore: FirebaseFirestore,
