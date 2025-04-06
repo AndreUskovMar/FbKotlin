@@ -38,12 +38,12 @@ class MainActivity : ComponentActivity() {
                             navData,
                             onBookEditClick = { book ->
                                 navController.navigate(AddBookScreenObject(
-                                    book.key,
-                                    book.name,
-                                    book.description,
-                                    book.category,
-                                    book.price,
-                                    book.imageUrl,
+                                    key = book.key,
+                                    name = book.name,
+                                    description = book.description,
+                                    category = book.category,
+                                    price = book.price,
+                                    imageUrl = book.imageUrl,
                                 ))
                             }
                         ) {

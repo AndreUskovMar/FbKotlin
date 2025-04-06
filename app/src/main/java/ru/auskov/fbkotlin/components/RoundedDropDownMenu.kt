@@ -11,6 +11,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -34,8 +35,10 @@ fun RoundedDropDownMenu(
         mutableStateOf(false)
     }
 
-    val selectedItem = remember {
-        mutableStateOf(if (category.isNotEmpty()) category else listItems[1])
+    LaunchedEffect(Unit) {
+        if (category.isEmpty()) {
+            onOptionSelected(listItems[1])
+        }
     }
 
     Box (
@@ -49,7 +52,7 @@ fun RoundedDropDownMenu(
             }
             .padding(horizontal = 15.dp, vertical = 17.dp)
     ) {
-        Text(selectedItem.value)
+        Text(category)
         DropdownMenu(
             expanded = expanded.value,
             onDismissRequest = {
@@ -62,7 +65,7 @@ fun RoundedDropDownMenu(
                         Text(option)
                     },
                     onClick = {
-                        selectedItem.value = option
+                        // selectedItem.value = option
                         expanded.value = false
                         onOptionSelected(option)
                     }

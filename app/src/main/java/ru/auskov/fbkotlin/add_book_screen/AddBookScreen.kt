@@ -1,6 +1,7 @@
 package ru.auskov.fbkotlin.add_book_screen
 
 import android.content.ContentResolver
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -34,7 +35,9 @@ import ru.auskov.fbkotlin.components.RoundedTextInput
 import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.ui.theme.Purple40
 import android.util.Base64
+import android.util.Log
 import androidx.compose.ui.platform.LocalContext
+import coil3.Bitmap
 import ru.auskov.fbkotlin.add_book_screen.data.AddBookScreenObject
 
 @Composable
@@ -42,8 +45,6 @@ fun AddBookScreen(
     navData: AddBookScreenObject = AddBookScreenObject(),
     onSavedSuccess: () -> Unit = {}
 ) {
-    var selectedCategory = navData.category
-
     val firestore = remember {
         FirebaseFirestore.getInstance()
     }
@@ -53,6 +54,10 @@ fun AddBookScreen(
 //    }
 
     val cr = LocalContext.current.contentResolver
+
+    val category = remember {
+        mutableStateOf(navData.category)
+    }
 
     val title = remember {
         mutableStateOf(navData.name)
@@ -70,14 +75,30 @@ fun AddBookScreen(
         mutableStateOf<Uri?>(null)
     }
 
+    val imageBitmap = remember {
+        var bitmap: Bitmap? = null
+
+        try {
+            val base64Image = Base64.decode(navData.imageUrl, Base64.DEFAULT)
+            bitmap = BitmapFactory.decodeByteArray(base64Image, 0, base64Image.size)
+        } catch (e: IllegalArgumentException) {
+            Log.d("MyLog", e.message.toString())
+        }
+
+        mutableStateOf(bitmap)
+    }
+
     val imageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
+        imageBitmap.value = null
         imageUri.value = uri
     }
 
     Image(
-        painter = rememberAsyncImagePainter(model = imageUri.value),
+        painter = rememberAsyncImagePainter(
+            model = imageBitmap.value ?: imageUri.value
+        ),
         contentDescription = "Add Book",
         modifier = Modifier.fillMaxSize(),
         contentScale = ContentScale.Crop,
@@ -108,9 +129,9 @@ fun AddBookScreen(
         )
 
         RoundedDropDownMenu(
-            category = navData.category,
-            onOptionSelected = { category ->
-                selectedCategory = category
+            category = category.value,
+            onOptionSelected = { selectedCategory ->
+                category.value = selectedCategory
             }
         )
 
@@ -158,17 +179,20 @@ fun AddBookScreen(
             Spacer(modifier = Modifier.height(10.dp))
 
             RoundedButton(name = "Save New Book") {
+                val imageBase64 = if (imageUri.value != null ) convertImageToBase64(
+                    imageUri.value as Uri,
+                    cr
+                ) else navData.imageUrl
+
                 saveBookToFireStore(
                     firestore,
                     book = Book(
+                        key = navData.key,
                         name = title.value,
                         description = description.value,
                         price = price.value,
-                        category = selectedCategory,
-                        imageUrl = convertImageToBase64(
-                            imageUri.value as Uri,
-                            cr
-                        )
+                        category = category.value,
+                        imageUrl = imageBase64
                     ),
                     onSuccess = {
                         onSavedSuccess()
@@ -233,7 +257,9 @@ private fun saveBookToFireStore(
     onError: () -> Unit,
 ) {
     val db = firestore.collection("books")
-    val key = db.document().id
+    val key = book.key.ifEmpty {
+        db.document().id
+    }
 
     db.document(key)
         .set(
@@ -243,6 +269,7 @@ private fun saveBookToFireStore(
             onSuccess()
         }
         .addOnFailureListener {
+            Log.d("MyLog", it.message.toString())
             onError()
         }
 }
