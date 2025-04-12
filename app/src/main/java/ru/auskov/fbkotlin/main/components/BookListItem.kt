@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -33,7 +35,8 @@ import ru.auskov.fbkotlin.data.Book
 fun BookListItem(
     isAdminState: Boolean,
     book: Book,
-    onEditBook: (Book) -> Unit
+    onEditBook: (Book) -> Unit,
+    onFavoriteClick: () -> Unit,
 ) {
     var bitmap: Bitmap? = null
 
@@ -98,6 +101,20 @@ fun BookListItem(
                 }
             ) {
                 Icon(Icons.Default.Edit, contentDescription = "Edit")
+            }
+
+            IconButton(
+                onClick = {
+                    onFavoriteClick()
+                }
+            ) {
+                Icon(
+                    if (book.isFavorite)
+                        Icons.Default.Favorite
+                    else
+                        Icons.Default.FavoriteBorder,
+                    contentDescription = "Favorite"
+                )
             }
         }
     }

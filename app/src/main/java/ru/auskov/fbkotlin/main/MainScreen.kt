@@ -25,6 +25,7 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.ktx.firestore
 import kotlinx.coroutines.launch
 import ru.auskov.fbkotlin.data.Book
+import ru.auskov.fbkotlin.data.Favorite
 import ru.auskov.fbkotlin.login.data.MainScreenDataObject
 import ru.auskov.fbkotlin.main.components.BookListItem
 import ru.auskov.fbkotlin.main.components.BottomMenu
@@ -48,6 +49,10 @@ fun MainScreen(
         mutableStateOf(false)
     }
 
+    val db = remember {
+        Firebase.firestore
+    }
+
     LaunchedEffect(Unit) {
         isAdmin { isAdmin ->
             isAdminState.value = isAdmin
@@ -55,9 +60,10 @@ fun MainScreen(
     }
 
     LaunchedEffect(Unit) {
-        val db = Firebase.firestore
-        getBooksList(db) { books ->
-            booksList.value = books
+        getFavoriteIdsList(db, navData.uid) { listIds ->
+            getBooksList(db, listIds) { books ->
+                booksList.value = books
+            }
         }
     }
 
@@ -89,9 +95,30 @@ fun MainScreen(
                     .padding(paddingValue)
             ) {
                 items(booksList.value) { book ->
-                    BookListItem(isAdminState.value, book) {
-                        onBookEditClick(book)
-                    }
+                    BookListItem(
+                        isAdminState.value,
+                        book,
+                        onEditBook = {
+                            onBookEditClick(book)
+                        },
+                        onFavoriteClick = {
+                            booksList.value = booksList.value.map {
+                                if (book.key == it.key) {
+                                    addToFavorites(
+                                        db,
+                                        Favorite(it.key),
+                                        !it.isFavorite,
+                                        navData.uid
+                                    )
+
+                                    it.copy(isFavorite = !it.isFavorite)
+                                } else {
+                                    it
+                                }
+
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -111,14 +138,66 @@ fun isAdmin(onAdmin: (Boolean) -> Unit) {
 
 private fun getBooksList(
     db: FirebaseFirestore,
+    listIds: List<String>,
     onChangeState: (List<Book>) -> Unit
 ) {
     db.collection("books")
         .get()
         .addOnSuccessListener { task ->
-            onChangeState(task.toObjects(Book::class.java))
+            val booksList = task.toObjects(Book::class.java).map { book ->
+                if (listIds.contains(book.key)) {
+                    book.copy(isFavorite = true)
+                } else {
+                    book
+                }
+            }
+            onChangeState(booksList)
         }
         .addOnFailureListener { error ->
             Log.d("MyLog", error.message.toString())
         }
+}
+
+private fun getFavoriteIdsList(
+    db: FirebaseFirestore,
+    uid: String,
+    onSuccess: (List<String>) -> Unit
+) {
+    db.collection("users")
+        .document(uid)
+        .collection("favorites")
+        .get()
+        .addOnSuccessListener { task ->
+            val idsList = arrayListOf<String>()
+            val favsList = task.toObjects(Favorite::class.java)
+            favsList.forEach {
+                idsList.add(it.key)
+            }
+            onSuccess(idsList)
+        }
+        .addOnFailureListener { error ->
+            Log.d("MyLog", error.message.toString())
+        }
+}
+
+private fun addToFavorites(
+    db: FirebaseFirestore,
+    favorite: Favorite,
+    isFav: Boolean,
+    uid: String,
+) {
+    if (isFav) {
+        db.collection("users")
+            .document(uid)
+            .collection("favorites")
+            .document(favorite.key)
+            .set(favorite)
+    } else {
+        db.collection("users")
+            .document(uid)
+            .collection("favorites")
+            .document(favorite.key)
+            .delete()
+
+    }
 }
