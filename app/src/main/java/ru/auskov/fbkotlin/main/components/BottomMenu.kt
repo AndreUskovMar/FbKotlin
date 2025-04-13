@@ -10,7 +10,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.painterResource
 
 @Composable
-fun BottomMenu() {
+fun BottomMenu(
+    onHomeClick: () -> Unit,
+    onFavoritesClick: () -> Unit
+) {
     val items = listOf(
         BottomMenuItem.Home,
         BottomMenuItem.Favourites,
@@ -25,6 +28,10 @@ fun BottomMenu() {
                 selected = selectedItem.value == item.title,
                 onClick = {
                     selectedItem.value = item.title
+                    when(item.title) {
+                        BottomMenuItem.Home.title -> onHomeClick()
+                        BottomMenuItem.Favourites.title -> onFavoritesClick()
+                    }
                 },
                 icon = {
                     Icon(

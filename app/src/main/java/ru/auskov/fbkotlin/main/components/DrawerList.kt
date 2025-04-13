@@ -24,7 +24,8 @@ import ru.auskov.fbkotlin.ui.theme.LightGreen
 @Composable
 fun DrawerList(
     isAdminState: Boolean,
-    onAdminClick: () -> Unit
+    onAdminClick: () -> Unit,
+    onFavoritesClick: () -> Unit,
 ) {
     val listItems = listOf(
         "Favourites",
@@ -48,7 +49,9 @@ fun DrawerList(
             ) {
                 items(listItems) { item ->
                     DrawerListItem(name = item) {
-
+                        if (item == listItems[0]) {
+                            onFavoritesClick()
+                        }
                     }
                 }
             }

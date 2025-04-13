@@ -20,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import com.google.firebase.Firebase
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.ktx.firestore
@@ -53,6 +54,22 @@ fun MainScreen(
         Firebase.firestore
     }
 
+    fun getAllBooks() {
+        getFavoriteIdsList(db, navData.uid) { listIds ->
+            getBooksList(db, listIds) { books ->
+                booksList.value = books
+            }
+        }
+    }
+
+    fun getFavoritesBooks() {
+        getFavoriteIdsList(db, navData.uid) { listIds ->
+            getFavoritesBooksList(db, listIds) { books ->
+                booksList.value = books
+            }
+        }
+    }
+
     LaunchedEffect(Unit) {
         isAdmin { isAdmin ->
             isAdminState.value = isAdmin
@@ -60,11 +77,7 @@ fun MainScreen(
     }
 
     LaunchedEffect(Unit) {
-        getFavoriteIdsList(db, navData.uid) { listIds ->
-            getBooksList(db, listIds) { books ->
-                booksList.value = books
-            }
-        }
+        getAllBooks()
     }
 
     ModalNavigationDrawer(
@@ -73,20 +86,37 @@ fun MainScreen(
         drawerContent = {
             Column(modifier = Modifier.fillMaxWidth(0.7f)) {
                 DrawerHeader(navData.email)
-                DrawerList(isAdminState.value) {
-                    coroutineScope.launch {
-                        drawerState.close()
-                    }
+                DrawerList(
+                    isAdminState.value,
+                    onAdminClick = {
+                        coroutineScope.launch {
+                            drawerState.close()
+                        }
 
-                    onAdminClick()
-                }
+                        onAdminClick()
+                    },
+                    onFavoritesClick = {
+                        coroutineScope.launch {
+                            drawerState.close()
+                        }
+
+                        getFavoritesBooks()
+                    }
+                )
             }
         },
     ) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             bottomBar = {
-                BottomMenu()
+                BottomMenu(
+                    onHomeClick = {
+                        getAllBooks()
+                    },
+                    onFavoritesClick = {
+                        getFavoritesBooks()
+                    }
+                )
             }
         ) { paddingValue ->
             LazyVerticalGrid(
@@ -150,6 +180,25 @@ private fun getBooksList(
                 } else {
                     book
                 }
+            }
+            onChangeState(booksList)
+        }
+        .addOnFailureListener { error ->
+            Log.d("MyLog", error.message.toString())
+        }
+}
+
+private fun getFavoritesBooksList(
+    db: FirebaseFirestore,
+    listIds: List<String>,
+    onChangeState: (List<Book>) -> Unit
+) {
+    db.collection("books")
+        .whereIn(FieldPath.documentId(), listIds)
+        .get()
+        .addOnSuccessListener { task ->
+            val booksList = task.toObjects(Book::class.java).map { book ->
+                book.copy(isFavorite = true)
             }
             onChangeState(booksList)
         }
