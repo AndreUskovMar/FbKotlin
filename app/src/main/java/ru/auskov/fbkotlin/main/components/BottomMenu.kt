@@ -12,7 +12,7 @@ import androidx.compose.ui.res.painterResource
 @Composable
 fun BottomMenu(
     onHomeClick: () -> Unit,
-    onFavoritesClick: () -> Unit
+    onFavoritesClick: () -> Unit,
 ) {
     val items = listOf(
         BottomMenuItem.Home,

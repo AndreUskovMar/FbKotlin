@@ -54,9 +54,9 @@ fun MainScreen(
         Firebase.firestore
     }
 
-    fun getAllBooks() {
+    fun getAllBooks(category: String) {
         getFavoriteIdsList(db, navData.uid) { listIds ->
-            getBooksList(db, listIds) { books ->
+            getBooksList(db, listIds, category) { books ->
                 booksList.value = books
             }
         }
@@ -77,7 +77,7 @@ fun MainScreen(
     }
 
     LaunchedEffect(Unit) {
-        getAllBooks()
+        getAllBooks("Fantasy")
     }
 
     ModalNavigationDrawer(
@@ -101,6 +101,13 @@ fun MainScreen(
                         }
 
                         getFavoritesBooks()
+                    },
+                    onCategoryClick = {category ->
+                        coroutineScope.launch {
+                            drawerState.close()
+                        }
+
+                        getAllBooks(category)
                     }
                 )
             }
@@ -111,7 +118,7 @@ fun MainScreen(
             bottomBar = {
                 BottomMenu(
                     onHomeClick = {
-                        getAllBooks()
+                        getAllBooks("Fantasy")
                     },
                     onFavoritesClick = {
                         getFavoritesBooks()
@@ -169,9 +176,11 @@ fun isAdmin(onAdmin: (Boolean) -> Unit) {
 private fun getBooksList(
     db: FirebaseFirestore,
     listIds: List<String>,
+    category: String,
     onChangeState: (List<Book>) -> Unit
 ) {
     db.collection("books")
+        .whereEqualTo("category", category)
         .get()
         .addOnSuccessListener { task ->
             val booksList = task.toObjects(Book::class.java).map { book ->

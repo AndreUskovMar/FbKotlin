@@ -26,6 +26,7 @@ fun DrawerList(
     isAdminState: Boolean,
     onAdminClick: () -> Unit,
     onFavoritesClick: () -> Unit,
+    onCategoryClick: (String) -> Unit
 ) {
     val listItems = listOf(
         "Favourites",
@@ -51,6 +52,8 @@ fun DrawerList(
                     DrawerListItem(name = item) {
                         if (item == listItems[0]) {
                             onFavoritesClick()
+                        } else {
+                            onCategoryClick(item)
                         }
                     }
                 }
