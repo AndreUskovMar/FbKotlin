@@ -30,6 +30,7 @@ import ru.auskov.fbkotlin.data.Favorite
 import ru.auskov.fbkotlin.login.data.MainScreenDataObject
 import ru.auskov.fbkotlin.main.components.BookListItem
 import ru.auskov.fbkotlin.main.components.BottomMenu
+import ru.auskov.fbkotlin.main.components.BottomMenuItem
 import ru.auskov.fbkotlin.main.components.DrawerHeader
 import ru.auskov.fbkotlin.main.components.DrawerList
 
@@ -45,6 +46,7 @@ fun MainScreen(
     }
 
     val coroutineScope = rememberCoroutineScope()
+    val selectedItemState = remember { mutableStateOf(BottomMenuItem.Home.title) }
 
     val isAdminState = remember {
         mutableStateOf(false)
@@ -100,6 +102,8 @@ fun MainScreen(
                             drawerState.close()
                         }
 
+                        selectedItemState.value = BottomMenuItem.Favourites.title
+
                         getFavoritesBooks()
                     },
                     onCategoryClick = {category ->
@@ -117,10 +121,13 @@ fun MainScreen(
             modifier = Modifier.fillMaxSize(),
             bottomBar = {
                 BottomMenu(
+                    selectedItem = selectedItemState.value,
                     onHomeClick = {
+                        selectedItemState.value = BottomMenuItem.Home.title
                         getAllBooks("Fantasy")
                     },
                     onFavoritesClick = {
+                        selectedItemState.value = BottomMenuItem.Favourites.title
                         getFavoritesBooks()
                     }
                 )
@@ -153,6 +160,10 @@ fun MainScreen(
                                     it
                                 }
 
+                            }
+
+                            if (selectedItemState.value == BottomMenuItem.Favourites.title) {
+                                booksList.value = booksList.value.filter {it.isFavorite}
                             }
                         }
                     )
