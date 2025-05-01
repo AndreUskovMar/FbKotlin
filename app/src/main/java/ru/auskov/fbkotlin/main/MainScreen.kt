@@ -41,8 +41,9 @@ import ru.auskov.fbkotlin.main.components.DrawerList
 @Composable
 fun MainScreen(
     navData: MainScreenDataObject,
+    onBookClick: (Book) -> Unit,
     onBookEditClick: (Book) -> Unit,
-    onAdminClick: () -> Unit
+    onAdminClick: () -> Unit,
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val booksList = remember {
@@ -185,6 +186,9 @@ fun MainScreen(
                                 booksList.value = booksList.value.filter {it.isFavorite}
                                 isEmptyListState.value = booksList.value.isEmpty()
                             }
+                        },
+                        onBookClick = {
+                            onBookClick(book)
                         }
                     )
                 }

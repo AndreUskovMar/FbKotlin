@@ -11,6 +11,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import ru.auskov.fbkotlin.add_book_screen.AddBookScreen
 import ru.auskov.fbkotlin.add_book_screen.data.AddBookScreenObject
+import ru.auskov.fbkotlin.details.DetailsScreen
+import ru.auskov.fbkotlin.details.data.DetailsScreenObject
 import ru.auskov.fbkotlin.login.LoginScreen
 import ru.auskov.fbkotlin.login.data.LoginScreenObject
 import ru.auskov.fbkotlin.login.data.MainScreenDataObject
@@ -36,15 +38,27 @@ class MainActivity : ComponentActivity() {
                         val navData = navEntry.toRoute<MainScreenDataObject>()
                         MainScreen(
                             navData,
+                            onBookClick = { book ->
+                                navController.navigate(
+                                    DetailsScreenObject(
+                                        title = book.name,
+                                        description = book.description,
+                                        price = book.price,
+                                        imageUrl = book.imageUrl
+                                    )
+                                )
+                            },
                             onBookEditClick = { book ->
-                                navController.navigate(AddBookScreenObject(
-                                    key = book.key,
-                                    name = book.name,
-                                    description = book.description,
-                                    category = book.category,
-                                    price = book.price,
-                                    imageUrl = book.imageUrl,
-                                ))
+                                navController.navigate(
+                                    AddBookScreenObject(
+                                        key = book.key,
+                                        name = book.name,
+                                        description = book.description,
+                                        category = book.category,
+                                        price = book.price,
+                                        imageUrl = book.imageUrl,
+                                    )
+                                )
                             }
                         ) {
                             navController.navigate(AddBookScreenObject())
@@ -56,6 +70,10 @@ class MainActivity : ComponentActivity() {
                             Log.d("MyLog", "Success")
                             navController.popBackStack()
                         }
+                    }
+                    composable<DetailsScreenObject> { navEntry ->
+                        val navData = navEntry.toRoute<DetailsScreenObject>()
+                        DetailsScreen(navData)
                     }
                 }
             }

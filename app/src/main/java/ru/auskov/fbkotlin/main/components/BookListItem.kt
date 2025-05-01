@@ -3,6 +3,7 @@ package ru.auskov.fbkotlin.main.components
 import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,6 +38,7 @@ fun BookListItem(
     book: Book,
     onEditBook: (Book) -> Unit,
     onFavoriteClick: () -> Unit,
+    onBookClick: () -> Unit,
 ) {
     var bitmap: Bitmap? = null
 
@@ -51,6 +53,9 @@ fun BookListItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
+            .clickable {
+                onBookClick()
+            }
     ) {
         AsyncImage(
             model = bitmap ?: book.imageUrl,
