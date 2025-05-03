@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.gms) apply false
 
-    alias(libs.plugins.plagin.serialization) apply true
-    alias(libs.plugins.kotlin.compose) apply true
+    alias(libs.plugins.plugin.serialization) apply false
+    alias(libs.plugins.kotlin.compose) apply false
+    alias(libs.plugins.ksp.plugin) apply false
+    alias(libs.plugins.hilt.plugin) apply false
 }

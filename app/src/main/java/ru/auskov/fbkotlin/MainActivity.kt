@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import dagger.hilt.android.AndroidEntryPoint
 import ru.auskov.fbkotlin.add_book_screen.AddBookScreen
 import ru.auskov.fbkotlin.add_book_screen.data.AddBookScreenObject
 import ru.auskov.fbkotlin.details.DetailsScreen
@@ -19,6 +20,7 @@ import ru.auskov.fbkotlin.login.data.MainScreenDataObject
 import ru.auskov.fbkotlin.main.MainScreen
 import ru.auskov.fbkotlin.ui.theme.FbKotlinTheme
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

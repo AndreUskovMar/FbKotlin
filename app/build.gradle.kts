@@ -3,12 +3,14 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.gms)
-    alias(libs.plugins.plagin.serialization)
+    alias(libs.plugins.plugin.serialization)
+    alias(libs.plugins.ksp.plugin)
+    alias(libs.plugins.hilt.plugin)
 }
 
 android {
     namespace = "ru.auskov.fbkotlin"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "ru.auskov.fbkotlin"
@@ -42,6 +44,11 @@ android {
 }
 
 dependencies {
+    implementation(libs.android.hilt)
+    ksp(libs.android.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation)
+    ksp(libs.androidx.hilt.navigation.compiler)
+
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 
@@ -68,4 +75,10 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+tasks.all {
+    if (this is JavaCompile && name.contains("hilt", ignoreCase = true)) {
+        options.compilerArgs.add("-Xlint:-deprecation")
+    }
 }

@@ -1,20 +1,25 @@
 [versions]
-agp = "8.7.2"
+agp = "8.9.2"
 coilCompose = "3.0.4"
-kotlin = "2.0.0"
+kotlin = "2.1.0"
 coreKtx = "1.10.1"
 junit = "4.13.2"
-junitVersion = "1.1.5"
-espressoCore = "3.5.1"
-lifecycleRuntimeKtx = "2.6.1"
-activityCompose = "1.8.0"
-composeBom = "2024.04.01"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+lifecycleRuntimeKtx = "2.8.7"
+activityCompose = "1.10.1"
+composeBom = "2025.04.01"
 gmsVersion = "4.4.2"
-bomVersion = "33.6.0"
+bomVersion = "33.13.0"
 
-navVersion = "2.8.5"
+navVersion = "2.8.9"
 serializationVersion = "2.0.0"
 serializationKotlin = "1.7.1"
+
+hiltAndroid = "2.56.2"
+hiltNavigationCompose = "1.2.0"
+kspPlugin = "2.1.0-1.0.29"
+hiltPlugin = "2.56.2"
 
 [libraries]
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
@@ -26,6 +31,13 @@ firebase-auth = { group = "com.google.firebase", name = "firebase-auth"}
 
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serializationKotlin" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navVersion" }
+
+android-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid"}
+android-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid"}
+
+androidx-hilt-navigation = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose"}
+androidx-hilt-navigation-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltNavigationCompose"}
+
 
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -42,10 +54,14 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 gms = { id = "com.google.gms.google-services", version.ref = "gmsVersion" }
 
-plagin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "serializationVersion" }
+plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "serializationVersion" }
+
+ksp-plugin = { id = "com.google.devtools.ksp", version.ref = "kspPlugin" }
+hilt-plugin = { id = "com.google.dagger.hilt.android", version.ref = "hiltPlugin"}
