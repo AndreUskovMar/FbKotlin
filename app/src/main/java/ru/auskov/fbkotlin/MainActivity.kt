@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
                     composable<MainScreenDataObject> { navEntry ->
                         val navData = navEntry.toRoute<MainScreenDataObject>()
                         MainScreen(
-                            navData,
+                            navData = navData,
                             onBookClick = { book ->
                                 navController.navigate(
                                     DetailsScreenObject(

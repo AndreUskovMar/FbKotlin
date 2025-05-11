@@ -22,15 +22,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.google.firebase.Firebase
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FieldPath
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.ktx.firestore
 import kotlinx.coroutines.launch
 import ru.auskov.fbkotlin.data.Book
-import ru.auskov.fbkotlin.data.Favorite
 import ru.auskov.fbkotlin.login.data.MainScreenDataObject
 import ru.auskov.fbkotlin.main.components.BookListItem
 import ru.auskov.fbkotlin.main.components.BottomMenu
@@ -40,47 +36,19 @@ import ru.auskov.fbkotlin.main.components.DrawerList
 
 @Composable
 fun MainScreen(
+    viewModel: MainScreenViewModel  = hiltViewModel(),
     navData: MainScreenDataObject,
     onBookClick: (Book) -> Unit,
     onBookEditClick: (Book) -> Unit,
     onAdminClick: () -> Unit,
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val booksList = remember {
-        mutableStateOf(emptyList<Book>())
-    }
 
     val coroutineScope = rememberCoroutineScope()
     val selectedItemState = remember { mutableStateOf(BottomMenuItem.Home.title) }
 
     val isAdminState = remember {
         mutableStateOf(false)
-    }
-
-    val isEmptyListState = remember {
-        mutableStateOf(false)
-    }
-
-    val db = remember {
-        Firebase.firestore
-    }
-
-    fun getAllBooks(category: String) {
-        getFavoriteIdsList(db, navData.uid) { listIds ->
-            getBooksList(db, listIds, category) { books ->
-                isEmptyListState.value = books.isEmpty()
-                booksList.value = books
-            }
-        }
-    }
-
-    fun getFavoritesBooks() {
-        getFavoriteIdsList(db, navData.uid) { listIds ->
-            getFavoritesBooksList(db, listIds) { books ->
-                isEmptyListState.value = books.isEmpty()
-                booksList.value = books
-            }
-        }
     }
 
     LaunchedEffect(Unit) {
@@ -90,7 +58,7 @@ fun MainScreen(
     }
 
     LaunchedEffect(Unit) {
-        getAllBooks("Fantasy")
+        viewModel.getAllBooks("Fantasy")
     }
 
     ModalNavigationDrawer(
@@ -115,14 +83,16 @@ fun MainScreen(
 
                         selectedItemState.value = BottomMenuItem.Favourites.title
 
-                        getFavoritesBooks()
+                        viewModel.getFavoritesBooks()
                     },
                     onCategoryClick = {category ->
                         coroutineScope.launch {
                             drawerState.close()
                         }
 
-                        getAllBooks(category)
+                        selectedItemState.value = BottomMenuItem.Home.title
+
+                        viewModel.getAllBooks(category)
                     }
                 )
             }
@@ -135,16 +105,16 @@ fun MainScreen(
                     selectedItem = selectedItemState.value,
                     onHomeClick = {
                         selectedItemState.value = BottomMenuItem.Home.title
-                        getAllBooks("Fantasy")
+                        viewModel.getAllBooks("Fantasy")
                     },
                     onFavoritesClick = {
                         selectedItemState.value = BottomMenuItem.Favourites.title
-                        getFavoritesBooks()
+                        viewModel.getFavoritesBooks()
                     }
                 )
             }
         ) { paddingValue ->
-            if (isEmptyListState.value) {
+            if (viewModel.isEmptyListState.value) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -158,7 +128,7 @@ fun MainScreen(
                 modifier = Modifier
                     .padding(paddingValue)
             ) {
-                items(booksList.value) { book ->
+                items(viewModel.booksList.value) { book ->
                     BookListItem(
                         isAdminState.value,
                         book,
@@ -166,26 +136,7 @@ fun MainScreen(
                             onBookEditClick(book)
                         },
                         onFavoriteClick = {
-                            booksList.value = booksList.value.map {
-                                if (book.key == it.key) {
-                                    addToFavorites(
-                                        db,
-                                        Favorite(it.key),
-                                        !it.isFavorite,
-                                        navData.uid
-                                    )
-
-                                    it.copy(isFavorite = !it.isFavorite)
-                                } else {
-                                    it
-                                }
-
-                            }
-
-                            if (selectedItemState.value == BottomMenuItem.Favourites.title) {
-                                booksList.value = booksList.value.filter {it.isFavorite}
-                                isEmptyListState.value = booksList.value.isEmpty()
-                            }
+                            viewModel.onFavoriteClick(book, selectedItemState.value)
                         },
                         onBookClick = {
                             onBookClick(book)
@@ -206,96 +157,4 @@ fun isAdmin(onAdmin: (Boolean) -> Unit) {
 
             onAdmin(it.get("isAdmin") as Boolean)
         }
-}
-
-private fun getBooksList(
-    db: FirebaseFirestore,
-    listIds: List<String>,
-    category: String,
-    onChangeState: (List<Book>) -> Unit
-) {
-    db.collection("books")
-        .whereEqualTo("category", category)
-        .get()
-        .addOnSuccessListener { task ->
-            val booksList = task.toObjects(Book::class.java).map { book ->
-                if (listIds.contains(book.key)) {
-                    book.copy(isFavorite = true)
-                } else {
-                    book
-                }
-            }
-            onChangeState(booksList)
-        }
-        .addOnFailureListener { error ->
-            Log.d("MyLog", error.message.toString())
-        }
-}
-
-private fun getFavoritesBooksList(
-    db: FirebaseFirestore,
-    listIds: List<String>,
-    onChangeState: (List<Book>) -> Unit
-) {
-    if (listIds.isNotEmpty()) {
-        db.collection("books")
-            .whereIn(FieldPath.documentId(), listIds)
-            .get()
-            .addOnSuccessListener { task ->
-                val booksList = task.toObjects(Book::class.java).map { book ->
-                    book.copy(isFavorite = true)
-                }
-                onChangeState(booksList)
-            }
-            .addOnFailureListener { error ->
-                Log.d("MyLog", error.message.toString())
-            }
-    } else {
-        onChangeState(emptyList())
-    }
-
-}
-
-private fun getFavoriteIdsList(
-    db: FirebaseFirestore,
-    uid: String,
-    onSuccess: (List<String>) -> Unit
-) {
-    db.collection("users")
-        .document(uid)
-        .collection("favorites")
-        .get()
-        .addOnSuccessListener { task ->
-            val idsList = arrayListOf<String>()
-            val favsList = task.toObjects(Favorite::class.java)
-            favsList.forEach {
-                idsList.add(it.key)
-            }
-            onSuccess(idsList)
-        }
-        .addOnFailureListener { error ->
-            Log.d("MyLog", error.message.toString())
-        }
-}
-
-private fun addToFavorites(
-    db: FirebaseFirestore,
-    favorite: Favorite,
-    isFav: Boolean,
-    uid: String,
-) {
-    if (isFav) {
-        db.collection("users")
-            .document(uid)
-            .collection("favorites")
-            .document(favorite.key)
-            .set(favorite)
-    } else {
-        db.collection("users")
-            .document(uid)
-            .collection("favorites")
-            .document(favorite.key)
-            .delete()
-
-    }
 }
