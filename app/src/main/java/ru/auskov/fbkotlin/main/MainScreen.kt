@@ -45,7 +45,6 @@ fun MainScreen(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     val coroutineScope = rememberCoroutineScope()
-    val selectedItemState = remember { mutableStateOf(BottomMenuItem.Home.title) }
 
     val isAdminState = remember {
         mutableStateOf(false)
@@ -58,7 +57,9 @@ fun MainScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.getAllBooks("Fantasy")
+        if (viewModel.booksList.value.isEmpty()) {
+            viewModel.getAllBooks("Fantasy")
+        }
     }
 
     ModalNavigationDrawer(
@@ -81,7 +82,7 @@ fun MainScreen(
                             drawerState.close()
                         }
 
-                        selectedItemState.value = BottomMenuItem.Favourites.title
+                        viewModel.selectedItemState.value = BottomMenuItem.Favourites.title
 
                         viewModel.getFavoritesBooks()
                     },
@@ -90,7 +91,7 @@ fun MainScreen(
                             drawerState.close()
                         }
 
-                        selectedItemState.value = BottomMenuItem.Home.title
+                        viewModel.selectedItemState.value = BottomMenuItem.Home.title
 
                         viewModel.getAllBooks(category)
                     }
@@ -102,13 +103,13 @@ fun MainScreen(
             modifier = Modifier.fillMaxSize(),
             bottomBar = {
                 BottomMenu(
-                    selectedItem = selectedItemState.value,
+                    selectedItem = viewModel.selectedItemState.value,
                     onHomeClick = {
-                        selectedItemState.value = BottomMenuItem.Home.title
+                        viewModel.selectedItemState.value = BottomMenuItem.Home.title
                         viewModel.getAllBooks("Fantasy")
                     },
                     onFavoritesClick = {
-                        selectedItemState.value = BottomMenuItem.Favourites.title
+                        viewModel.selectedItemState.value = BottomMenuItem.Favourites.title
                         viewModel.getFavoritesBooks()
                     }
                 )
@@ -136,7 +137,7 @@ fun MainScreen(
                             onBookEditClick(book)
                         },
                         onFavoriteClick = {
-                            viewModel.onFavoriteClick(book, selectedItemState.value)
+                            viewModel.onFavoriteClick(book)
                         },
                         onBookClick = {
                             onBookClick(book)

@@ -14,6 +14,7 @@ class MainScreenViewModel @Inject constructor(
 ): ViewModel() {
     val booksList = mutableStateOf(emptyList<Book>())
     val isEmptyListState = mutableStateOf(false)
+    val selectedItemState = mutableStateOf(BottomMenuItem.Home.title)
 
     fun getAllBooks(category: String) {
         firebaseManager.getBooksList(category) { books ->
@@ -29,10 +30,10 @@ class MainScreenViewModel @Inject constructor(
         }
     }
 
-    fun onFavoriteClick(book: Book, tabName: String) {
+    fun onFavoriteClick(book: Book) {
         val updatedBooksList = firebaseManager.changeFavoriteState(booksList.value, book)
 
-        booksList.value = if (tabName == BottomMenuItem.Favourites.title) {
+        booksList.value = if (selectedItemState.value == BottomMenuItem.Favourites.title) {
             updatedBooksList.filter {it.isFavorite}
         } else {
             updatedBooksList
