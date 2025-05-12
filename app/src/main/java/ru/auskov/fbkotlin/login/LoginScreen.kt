@@ -1,6 +1,5 @@
 package ru.auskov.fbkotlin.login
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,8 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -27,10 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.firebase.auth.EmailAuthProvider
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import ru.auskov.fbkotlin.R
 import ru.auskov.fbkotlin.components.RoundedButton
 import ru.auskov.fbkotlin.components.RoundedTextInput
@@ -44,25 +37,6 @@ fun LoginScreen(
     viewModel: LoginScreenViewModel = hiltViewModel(),
     onNavigateToMainScreen: (MainScreenDataObject) -> Unit
 ) {
-    // Initialize Firebase Auth
-    val auth: FirebaseAuth = remember {
-        Firebase.auth
-    }
-
-    val email = remember {
-        mutableStateOf("andreuskov2211@gmail.com")
-    }
-
-    val password = remember {
-        mutableStateOf("12345678qQ!")
-    }
-
-    val error = remember {
-        mutableStateOf("")
-    }
-
-    //    Log.d("MyLog", "User signed in with email: ${auth.currentUser?.email}")
-
     Image(
         painter = painterResource(R.drawable.login_bg),
         contentDescription = "Login",
@@ -101,25 +75,25 @@ fun LoginScreen(
 
         RoundedTextInput(
             label = "Email",
-            value = email.value
+            value = viewModel.email.value
         ) {
-            email.value = it
+            viewModel.email.value = it
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
         RoundedTextInput(
             label = "Password",
-            value = password.value,
+            value = viewModel.password.value,
             isPassword = true
         ) {
-            password.value = it
+            viewModel.password.value = it
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = error.value,
+            text = viewModel.error.value,
             color = Red,
             textAlign = TextAlign.Center
         )
@@ -133,15 +107,9 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             RoundedButton(name = "Sign In") {
-                signIn(
-                    auth,
-                    email.value,
-                    password.value,
+                viewModel.signIn(
                     onSignInSuccess = { navData ->
                         onNavigateToMainScreen(navData)
-                    },
-                    onSignInError = { e ->
-                        error.value = e
                     }
                 )
             }
@@ -149,97 +117,12 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(10.dp))
 
             RoundedButton(name = "Sign Up") {
-                signUp(
-                    auth,
-                    email.value,
-                    password.value,
+                viewModel.signUp(
                     onSignUpSuccess = { navData ->
                         onNavigateToMainScreen(navData)
-                    },
-                    onSignUpError = { e ->
-                        error.value = e
                     }
                 )
             }
         }
-    }
-}
-
-private fun signUp(
-    auth: FirebaseAuth,
-    email: String,
-    password: String,
-    onSignUpSuccess: (MainScreenDataObject) -> Unit,
-    onSignUpError: (String) -> Unit
-) {
-    if (email.isBlank() || password.isBlank()) {
-        return onSignUpError("Email and password cannot be empty")
-    }
-
-    auth.createUserWithEmailAndPassword(email, password)
-        .addOnCompleteListener { task ->
-            if (task.isSuccessful) onSignUpSuccess(
-                MainScreenDataObject(
-                    task.result.user?.uid ?: "",
-                    task.result.user?.email ?: email,
-                )
-            )
-        }
-        .addOnFailureListener {
-            onSignUpError(it.localizedMessage ?: "Sign Up Error")
-        }
-}
-
-private fun signIn(
-    auth: FirebaseAuth,
-    email: String,
-    password: String,
-    onSignInSuccess: (MainScreenDataObject) -> Unit,
-    onSignInError: (String) -> Unit
-) {
-    if (email.isBlank() || password.isBlank()) {
-        return onSignInError("Email and password cannot be empty")
-    }
-
-    auth.signInWithEmailAndPassword(email, password)
-        .addOnCompleteListener { task ->
-            if (task.isSuccessful) onSignInSuccess(
-                MainScreenDataObject(
-                    task.result.user?.uid ?: "",
-                    task.result.user?.email ?: email,
-                )
-            )
-        }
-        .addOnFailureListener {
-            onSignInError(it.localizedMessage ?: "Sign In Error")
-        }
-}
-
-private fun logout(auth: FirebaseAuth) {
-    auth.signOut()
-}
-
-private fun deleteAccount(auth: FirebaseAuth, email: String, password: String) {
-    if (auth.currentUser !== null) {
-        val credentials = EmailAuthProvider.getCredential(email, password)
-
-        auth.currentUser?.reauthenticate(credentials)
-            ?.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    auth.currentUser?.delete()!!
-                        .addOnCompleteListener {
-                            if (it.isSuccessful) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d("MyLog", "delete:success")
-                                // val user = auth.currentUser
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w("MyLog", "delete:failure", it.exception)
-                            }
-                        }
-                } else {
-                    Log.w("MyLog", "reauthenticate:failure", task.exception)
-                }
-            }
     }
 }
