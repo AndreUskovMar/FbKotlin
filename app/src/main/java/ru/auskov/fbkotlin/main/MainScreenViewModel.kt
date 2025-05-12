@@ -6,32 +6,32 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.main.components.BottomMenuItem
-import ru.auskov.fbkotlin.utils.firebase.FirebaseManager
+import ru.auskov.fbkotlin.utils.firebase.FirestoreManager
 
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
-    private val firebaseManager: FirebaseManager
+    private val firestoreManager: FirestoreManager
 ): ViewModel() {
     val booksList = mutableStateOf(emptyList<Book>())
     val isEmptyListState = mutableStateOf(false)
     val selectedItemState = mutableStateOf(BottomMenuItem.Home.title)
 
     fun getAllBooks(category: String) {
-        firebaseManager.getBooksList(category) { books ->
+        firestoreManager.getBooksList(category) { books ->
             isEmptyListState.value = books.isEmpty()
             booksList.value = books
         }
     }
 
     fun getFavoritesBooks() {
-        firebaseManager.getFavoritesBooksList { books ->
+        firestoreManager.getFavoritesBooksList { books ->
             isEmptyListState.value = books.isEmpty()
             booksList.value = books
         }
     }
 
     fun onFavoriteClick(book: Book) {
-        val updatedBooksList = firebaseManager.changeFavoriteState(booksList.value, book)
+        val updatedBooksList = firestoreManager.changeFavoriteState(booksList.value, book)
 
         booksList.value = if (selectedItemState.value == BottomMenuItem.Favourites.title) {
             updatedBooksList.filter {it.isFavorite}

@@ -10,7 +10,7 @@ import ru.auskov.fbkotlin.data.Favorite
 import javax.inject.Singleton
 
 @Singleton
-class FirebaseManager(
+class FirestoreManager(
     private val auth: FirebaseAuth,
     private val db: FirebaseFirestore
 ) {

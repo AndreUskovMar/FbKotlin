@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -40,6 +41,7 @@ import ru.auskov.fbkotlin.ui.theme.Red
 
 @Composable
 fun LoginScreen(
+    viewModel: LoginScreenViewModel = hiltViewModel(),
     onNavigateToMainScreen: (MainScreenDataObject) -> Unit
 ) {
     // Initialize Firebase Auth
@@ -108,7 +110,8 @@ fun LoginScreen(
 
         RoundedTextInput(
             label = "Password",
-            value = password.value
+            value = password.value,
+            isPassword = true
         ) {
             password.value = it
         }
