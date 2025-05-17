@@ -2,6 +2,7 @@ package ru.auskov.fbkotlin.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -88,15 +90,17 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            RoundedTextInput(
-                label = "Password",
-                value = viewModel.password.value,
-                isPassword = true
-            ) {
-                viewModel.password.value = it
-            }
+            if (!viewModel.resetPasswordState.value) {
+                RoundedTextInput(
+                    label = "Password",
+                    value = viewModel.password.value,
+                    isPassword = true
+                ) {
+                    viewModel.password.value = it
+                }
 
-            Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(10.dp))
+            }
 
             Text(
                 text = viewModel.error.value,
@@ -106,30 +110,46 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 50.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                RoundedButton(name = "Sign In") {
-                    viewModel.signIn(
-                        onSignInSuccess = { navData ->
-                            onNavigateToMainScreen(navData)
-                        }
-                    )
+            if (!viewModel.resetPasswordState.value) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 50.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    RoundedButton(name = "Sign In") {
+                        viewModel.signIn(
+                            onSignInSuccess = { navData ->
+                                onNavigateToMainScreen(navData)
+                            }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    RoundedButton(name = "Sign Up") {
+                        viewModel.signUp(
+                            onSignUpSuccess = { navData ->
+                                onNavigateToMainScreen(navData)
+                            }
+                        )
+                    }
                 }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                RoundedButton(name = "Sign Up") {
-                    viewModel.signUp(
-                        onSignUpSuccess = { navData ->
-                            onNavigateToMainScreen(navData)
-                        }
-                    )
+            } else {
+                RoundedButton(name = "Reset Password") {
+                    viewModel.resetPassword()
                 }
+            }
 
+            if (!viewModel.resetPasswordState.value) {
+                Text(
+                    text = "Forget Password",
+                    color = Color.Blue,
+                    modifier = Modifier.clickable {
+                        viewModel.error.value = ""
+                        viewModel.resetPasswordState.value = true
+                    }
+                )
             }
         } else {
             RoundedButton(name = "Enter") {

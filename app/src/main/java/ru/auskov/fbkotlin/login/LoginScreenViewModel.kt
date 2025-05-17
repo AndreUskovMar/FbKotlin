@@ -17,6 +17,8 @@ class LoginScreenViewModel @Inject constructor(
     val password = mutableStateOf("12345678qQ!")
     val error = mutableStateOf("")
 
+    val resetPasswordState = mutableStateOf(false)
+
     fun signIn(
         onSignInSuccess: (MainScreenDataObject) -> Unit
     ) {
@@ -24,6 +26,7 @@ class LoginScreenViewModel @Inject constructor(
             email.value,
             password.value,
             onSignInSuccess = { navData ->
+                error.value = ""
                 onSignInSuccess(navData)
             },
             onSignInError = { e ->
@@ -39,9 +42,23 @@ class LoginScreenViewModel @Inject constructor(
             email.value,
             password.value,
             onSignUpSuccess = { navData ->
+                error.value = ""
                 onSignUpSuccess(navData)
             },
             onSignUpError = { e ->
+                error.value = e
+            }
+        )
+    }
+
+    fun resetPassword() {
+        authManager.resetPassword(
+            email.value,
+            onResetPasswordSuccess = {
+                resetPasswordState.value = false
+                error.value = "Reset password link sent to email"
+            },
+            onResetPasswordError = { e ->
                 error.value = e
             }
         )
