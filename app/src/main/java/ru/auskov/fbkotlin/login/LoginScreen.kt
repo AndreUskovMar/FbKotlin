@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -37,6 +38,10 @@ fun LoginScreen(
     viewModel: LoginScreenViewModel = hiltViewModel(),
     onNavigateToMainScreen: (MainScreenDataObject) -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.checkUserState()
+    }
+
     Image(
         painter = painterResource(R.drawable.login_bg),
         contentDescription = "Login",
@@ -73,55 +78,73 @@ fun LoginScreen(
             modifier = Modifier.padding(bottom = 50.dp),
         )
 
-        RoundedTextInput(
-            label = "Email",
-            value = viewModel.email.value
-        ) {
-            viewModel.email.value = it
-        }
+        if (viewModel.user.value == null) {
+            RoundedTextInput(
+                label = "Email",
+                value = viewModel.email.value
+            ) {
+                viewModel.email.value = it
+            }
 
-        Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-        RoundedTextInput(
-            label = "Password",
-            value = viewModel.password.value,
-            isPassword = true
-        ) {
-            viewModel.password.value = it
-        }
+            RoundedTextInput(
+                label = "Password",
+                value = viewModel.password.value,
+                isPassword = true
+            ) {
+                viewModel.password.value = it
+            }
 
-        Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-        Text(
-            text = viewModel.error.value,
-            color = Red,
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = viewModel.error.value,
+                color = Red,
+                textAlign = TextAlign.Center
+            )
 
-        Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 50.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            RoundedButton(name = "Sign In") {
-                viewModel.signIn(
-                    onSignInSuccess = { navData ->
-                        onNavigateToMainScreen(navData)
-                    }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 50.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                RoundedButton(name = "Sign In") {
+                    viewModel.signIn(
+                        onSignInSuccess = { navData ->
+                            onNavigateToMainScreen(navData)
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                RoundedButton(name = "Sign Up") {
+                    viewModel.signUp(
+                        onSignUpSuccess = { navData ->
+                            onNavigateToMainScreen(navData)
+                        }
+                    )
+                }
+
+            }
+        } else {
+            RoundedButton(name = "Enter") {
+                onNavigateToMainScreen(
+                    MainScreenDataObject(
+                        viewModel.user.value!!.uid,
+                        viewModel.user.value!!.email!!,
+                    )
                 )
             }
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            RoundedButton(name = "Sign Up") {
-                viewModel.signUp(
-                    onSignUpSuccess = { navData ->
-                        onNavigateToMainScreen(navData)
-                    }
-                )
+            RoundedButton(name = "Logout") {
+                viewModel.logout()
             }
         }
     }

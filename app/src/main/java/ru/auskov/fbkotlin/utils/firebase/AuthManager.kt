@@ -3,6 +3,7 @@ package ru.auskov.fbkotlin.utils.firebase
 import android.util.Log
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import ru.auskov.fbkotlin.login.data.MainScreenDataObject
 import javax.inject.Singleton
 
@@ -56,6 +57,10 @@ class AuthManager(
             .addOnFailureListener {
                 onSignInError(it.localizedMessage ?: "Sign In Error")
             }
+    }
+
+    fun getCurrentUser(): FirebaseUser? {
+        return auth.currentUser
     }
 
     fun logout() {

@@ -2,6 +2,7 @@ package ru.auskov.fbkotlin.login
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.auskov.fbkotlin.login.data.MainScreenDataObject
 import ru.auskov.fbkotlin.utils.firebase.AuthManager
@@ -11,6 +12,7 @@ import javax.inject.Inject
 class LoginScreenViewModel @Inject constructor(
     private val authManager: AuthManager
 ) : ViewModel() {
+    val user = mutableStateOf<FirebaseUser?>(null)
     val email = mutableStateOf("andreuskov2211@gmail.com")
     val password = mutableStateOf("12345678qQ!")
     val error = mutableStateOf("")
@@ -43,5 +45,14 @@ class LoginScreenViewModel @Inject constructor(
                 error.value = e
             }
         )
+    }
+
+    fun checkUserState() {
+        user.value = authManager.getCurrentUser()
+    }
+
+    fun logout() {
+        authManager.logout()
+        user.value = null
     }
 }
