@@ -6,19 +6,29 @@ import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.auskov.fbkotlin.login.data.MainScreenDataObject
 import ru.auskov.fbkotlin.utils.firebase.AuthManager
+import ru.auskov.fbkotlin.utils.store.StoreManager
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginScreenViewModel @Inject constructor(
-    private val authManager: AuthManager
+    private val authManager: AuthManager,
+    private val storeManager: StoreManager
 ) : ViewModel() {
     val user = mutableStateOf<FirebaseUser?>(null)
-    val email = mutableStateOf("andreuskov2211@gmail.com")
-    val password = mutableStateOf("12345678qQ!")
+    val email = mutableStateOf("")
+    val password = mutableStateOf("")
     val error = mutableStateOf("")
 
     val resetPasswordState = mutableStateOf(false)
     val isShownAlertDialog = mutableStateOf(false)
+
+    fun getCurrentEmail() {
+        email.value = storeManager.getString(StoreManager.EMAIL_KEY, "")
+    }
+
+    fun saveLastEmail() {
+        storeManager.saveString(StoreManager.EMAIL_KEY, email.value)
+    }
 
     fun signIn(
         onSignInSuccess: (MainScreenDataObject) -> Unit

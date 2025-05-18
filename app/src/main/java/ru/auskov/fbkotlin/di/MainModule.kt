@@ -1,5 +1,6 @@
 package ru.auskov.fbkotlin.di
 
+import android.app.Application
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -11,6 +12,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ru.auskov.fbkotlin.utils.firebase.AuthManager
 import ru.auskov.fbkotlin.utils.firebase.FirestoreManager
+import ru.auskov.fbkotlin.utils.store.StoreManager
 import javax.inject.Singleton
 
 @Module
@@ -43,6 +45,14 @@ object MainModule {
         auth: FirebaseAuth
     ): AuthManager {
         return AuthManager(auth)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStoreManager(
+        app: Application
+    ): StoreManager {
+        return StoreManager(app)
     }
 
 }
