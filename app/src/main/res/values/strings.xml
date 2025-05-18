@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">FbKotlin</string>
+    <string name="reset_password_message">Reset password link sent to email</string>
 </resources>

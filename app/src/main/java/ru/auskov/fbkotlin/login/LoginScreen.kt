@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ru.auskov.fbkotlin.R
+import ru.auskov.fbkotlin.components.CustomAlertDialog
 import ru.auskov.fbkotlin.components.RoundedButton
 import ru.auskov.fbkotlin.components.RoundedTextInput
 import ru.auskov.fbkotlin.login.data.MainScreenDataObject
@@ -168,4 +170,15 @@ fun LoginScreen(
             }
         }
     }
+
+    CustomAlertDialog(
+        isShownDialog = viewModel.isShownAlertDialog.value,
+        message = stringResource(R.string.reset_password_message),
+        onConfirm = {
+            viewModel.isShownAlertDialog.value = false
+        },
+        onDismiss = {
+            viewModel.isShownAlertDialog.value = false
+        }
+    )
 }

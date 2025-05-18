@@ -18,6 +18,7 @@ class LoginScreenViewModel @Inject constructor(
     val error = mutableStateOf("")
 
     val resetPasswordState = mutableStateOf(false)
+    val isShownAlertDialog = mutableStateOf(false)
 
     fun signIn(
         onSignInSuccess: (MainScreenDataObject) -> Unit
@@ -56,7 +57,7 @@ class LoginScreenViewModel @Inject constructor(
             email.value,
             onResetPasswordSuccess = {
                 resetPasswordState.value = false
-                error.value = "Reset password link sent to email"
+                isShownAlertDialog.value = true
             },
             onResetPasswordError = { e ->
                 error.value = e
