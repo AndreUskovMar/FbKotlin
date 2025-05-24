@@ -98,6 +98,21 @@ class FirestoreManager(
         }
     }
 
+    fun deleteBook(
+        book: Book,
+        onSuccess: () -> Unit
+    ) {
+        db.collection("books")
+            .document(book.key)
+            .delete()
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener {
+
+            }
+    }
+
     fun changeFavoriteState(books: List<Book>, book: Book): List<Book> {
         return books.map {
             if (book.key == it.key) {

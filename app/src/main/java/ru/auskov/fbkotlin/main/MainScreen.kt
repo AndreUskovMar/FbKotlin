@@ -136,6 +136,9 @@ fun MainScreen(
                         onEditBook = {
                             onBookEditClick(book)
                         },
+                        onDeleteBook = {
+                            viewModel.deleteBook(book)
+                        },
                         onFavoriteClick = {
                             viewModel.onFavoriteClick(book)
                         },

@@ -41,4 +41,10 @@ class MainScreenViewModel @Inject constructor(
 
         isEmptyListState.value = booksList.value.isEmpty()
     }
+
+    fun deleteBook(book: Book) {
+        firestoreManager.deleteBook(book) {
+            booksList.value = booksList.value.filter { it -> it.key != book.key }
+        }
+    }
 }

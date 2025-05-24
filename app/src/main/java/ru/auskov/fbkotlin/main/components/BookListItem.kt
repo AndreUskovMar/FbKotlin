@@ -4,6 +4,7 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -26,19 +28,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.Bitmap
 import coil3.compose.AsyncImage
 import ru.auskov.fbkotlin.data.Book
 
+@Preview(showBackground = true)
 @Composable
 fun BookListItem(
-    isAdminState: Boolean,
-    book: Book,
-    onEditBook: (Book) -> Unit,
-    onFavoriteClick: () -> Unit,
-    onBookClick: () -> Unit,
+    isAdminState: Boolean = true,
+    book: Book = Book(
+        name = "Title",
+        description = "Description",
+        category = "Category",
+        price = "100$"
+    ),
+    onEditBook: (Book) -> Unit = {},
+    onDeleteBook: (Book) -> Unit = {},
+    onFavoriteClick: () -> Unit = {},
+    onBookClick: () -> Unit = {},
 ) {
     var bitmap: Bitmap? = null
 
@@ -100,14 +110,6 @@ fun BookListItem(
                 modifier = Modifier.fillMaxWidth().weight(1f)
             )
 
-            if (isAdminState) IconButton(
-                onClick = {
-                    onEditBook(book)
-                }
-            ) {
-                Icon(Icons.Default.Edit, contentDescription = "Edit")
-            }
-
             IconButton(
                 onClick = {
                     onFavoriteClick()
@@ -120,6 +122,28 @@ fun BookListItem(
                         Icons.Default.FavoriteBorder,
                     contentDescription = "Favorite"
                 )
+            }
+        }
+
+        if (isAdminState) Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+            IconButton(
+                onClick = {
+                    onEditBook(book)
+                }
+            ) {
+                Icon(Icons.Default.Edit, contentDescription = "Edit")
+            }
+
+            IconButton(
+                onClick = {
+                    onDeleteBook(book)
+                }
+            ) {
+                Icon(Icons.Default.Delete, contentDescription = "Delete")
             }
         }
     }
