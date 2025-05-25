@@ -1,6 +1,5 @@
 package ru.auskov.fbkotlin.utils.firebase
 
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldPath
@@ -21,7 +20,8 @@ class FirestoreManager(
     }
 
     private fun getFavoriteIdsList(
-        onSuccess: (List<String>) -> Unit
+        onSuccess: (List<String>) -> Unit,
+        onFailure: (message: String) -> Unit
     ) {
         getFavoritesCategoryReference()
             .get()
@@ -34,55 +34,67 @@ class FirestoreManager(
                 onSuccess(idsList)
             }
             .addOnFailureListener { error ->
-                Log.d("MyLog", error.message.toString())
+                onFailure(error.message ?: "Error")
             }
     }
 
     fun getBooksList(
         category: String,
-        onChangeState: (List<Book>) -> Unit
+        onChangeState: (List<Book>) -> Unit,
+        onFailure: (message: String) -> Unit
     ) {
-        getFavoriteIdsList {listIds ->
-            db.collection("books")
-                .whereEqualTo("category", category)
-                .get()
-                .addOnSuccessListener { task ->
-                    val booksList = task.toObjects(Book::class.java).map { book ->
-                        if (listIds.contains(book.key)) {
-                            book.copy(isFavorite = true)
-                        } else {
-                            book
-                        }
-                    }
-                    onChangeState(booksList)
-                }
-                .addOnFailureListener { error ->
-                    Log.d("MyLog", error.message.toString())
-                }
-        }
-    }
-
-    fun getFavoritesBooksList(
-        onChangeState: (List<Book>) -> Unit
-    ) {
-        getFavoriteIdsList {listIds ->
-            if (listIds.isNotEmpty()) {
+        getFavoriteIdsList(
+            onSuccess = {listIds ->
                 db.collection("books")
-                    .whereIn(FieldPath.documentId(), listIds)
+                    .whereEqualTo("category", category)
                     .get()
                     .addOnSuccessListener { task ->
                         val booksList = task.toObjects(Book::class.java).map { book ->
-                            book.copy(isFavorite = true)
+                            if (listIds.contains(book.key)) {
+                                book.copy(isFavorite = true)
+                            } else {
+                                book
+                            }
                         }
                         onChangeState(booksList)
                     }
                     .addOnFailureListener { error ->
-                        Log.d("MyLog", error.message.toString())
+                        onFailure(error.message ?: "Error")
                     }
-            } else {
-                onChangeState(emptyList())
+            },
+            onFailure = {
+                onFailure(it)
             }
-        }
+        )
+    }
+
+    fun getFavoritesBooksList(
+        onChangeState: (List<Book>) -> Unit,
+        onFailure: (message: String) -> Unit
+    ) {
+        getFavoriteIdsList(
+            onSuccess = {listIds ->
+                if (listIds.isNotEmpty()) {
+                    db.collection("books")
+                        .whereIn(FieldPath.documentId(), listIds)
+                        .get()
+                        .addOnSuccessListener { task ->
+                            val booksList = task.toObjects(Book::class.java).map { book ->
+                                book.copy(isFavorite = true)
+                            }
+                            onChangeState(booksList)
+                        }
+                        .addOnFailureListener { error ->
+                            onFailure(error.message ?: "Error")
+                        }
+                } else {
+                    onChangeState(emptyList())
+                }
+            },
+            onFailure = {
+                onFailure(it)
+            }
+        )
     }
 
     private fun addToFavorites(
@@ -100,7 +112,8 @@ class FirestoreManager(
 
     fun deleteBook(
         book: Book,
-        onSuccess: () -> Unit
+        onSuccess: () -> Unit,
+        onFailure: (message: String) -> Unit
     ) {
         db.collection("books")
             .document(book.key)
@@ -108,8 +121,8 @@ class FirestoreManager(
             .addOnSuccessListener {
                 onSuccess()
             }
-            .addOnFailureListener {
-
+            .addOnFailureListener { error ->
+                onFailure(error.message ?: "Error")
             }
     }
 
@@ -125,7 +138,6 @@ class FirestoreManager(
             } else {
                 it
             }
-
         }
     }
 }

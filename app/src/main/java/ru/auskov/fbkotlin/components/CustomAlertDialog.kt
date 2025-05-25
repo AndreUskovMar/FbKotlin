@@ -17,7 +17,9 @@ fun CustomAlertDialog(
     message: String = "",
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
-    confirmButtonText: String = "OK"
+    confirmButtonText: String = "OK",
+    cancelButtonText: String = "CANCEL",
+    isCancelable: Boolean = false
 ) {
     if (isShownDialog) {
         AlertDialog(
@@ -33,6 +35,18 @@ fun CustomAlertDialog(
                         color = Color.Blue,
                         fontSize = 16.sp
                     )
+                }
+
+                if (isCancelable) {
+                    Button(onClick = {
+                        onDismiss()
+                    }, colors = ButtonDefaults.buttonColors(Color.White)) {
+                        Text(
+                            text = cancelButtonText,
+                            color = Color.Blue,
+                            fontSize = 16.sp
+                        )
+                    }
                 }
             },
             title = {

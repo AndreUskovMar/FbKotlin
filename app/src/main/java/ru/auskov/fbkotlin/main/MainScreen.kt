@@ -1,14 +1,17 @@
 package ru.auskov.fbkotlin.main
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -22,10 +25,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import kotlinx.coroutines.launch
+import ru.auskov.fbkotlin.components.CustomAlertDialog
 import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.login.data.MainScreenDataObject
 import ru.auskov.fbkotlin.main.components.BookListItem
@@ -42,12 +48,18 @@ fun MainScreen(
     onBookEditClick: (Book) -> Unit,
     onAdminClick: () -> Unit,
 ) {
+    val context = LocalContext.current
+
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     val coroutineScope = rememberCoroutineScope()
 
     val isAdminState = remember {
         mutableStateOf(false)
+    }
+
+    val isShownIndicator = remember {
+        mutableStateOf(true)
     }
 
     LaunchedEffect(Unit) {
@@ -59,6 +71,21 @@ fun MainScreen(
     LaunchedEffect(Unit) {
         if (viewModel.booksList.value.isEmpty()) {
             viewModel.getAllBooks("Fantasy")
+        }
+
+        viewModel.uiState.collect { state ->
+            when(state) {
+                is MainScreenViewModel.MainUIState.Loading -> {
+                    isShownIndicator.value = true
+                }
+                is MainScreenViewModel.MainUIState.Success -> {
+                    isShownIndicator.value = false
+                }
+                is MainScreenViewModel.MainUIState.Error -> {
+                    isShownIndicator.value = false
+                    Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
@@ -124,6 +151,32 @@ fun MainScreen(
                 }
             }
 
+            CustomAlertDialog(
+                title = "Delete book",
+                message = "A you sure you want to delete book?",
+                isCancelable = true,
+                isShownDialog = viewModel.isShowDeleteAlertDialog.value,
+                onConfirm = {
+                    viewModel.deleteBook()
+                },
+                onDismiss = {
+                    viewModel.isShowDeleteAlertDialog.value = false
+                    viewModel.bookToDelete = null
+                }
+            )
+
+            if (isShownIndicator.value) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(70.dp),
+                        color = Color.Green
+                    )
+                }
+            }
+
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier
@@ -137,7 +190,8 @@ fun MainScreen(
                             onBookEditClick(book)
                         },
                         onDeleteBook = {
-                            viewModel.deleteBook(book)
+                            viewModel.isShowDeleteAlertDialog.value = true
+                            viewModel.bookToDelete = book
                         },
                         onFavoriteClick = {
                             viewModel.onFavoriteClick(book)
