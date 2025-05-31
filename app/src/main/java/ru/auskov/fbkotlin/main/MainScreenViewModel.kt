@@ -19,6 +19,7 @@ class MainScreenViewModel @Inject constructor(
     val booksList = mutableStateOf(emptyList<Book>())
     val isEmptyListState = mutableStateOf(false)
     val selectedItemState = mutableStateOf(BottomMenuItem.Home.title)
+    val selectedCategoryState = mutableStateOf("Favorites")
     val isShowDeleteAlertDialog = mutableStateOf(false)
 
     var bookToDelete: Book? = null
@@ -32,6 +33,7 @@ class MainScreenViewModel @Inject constructor(
     }
 
     fun getAllBooks(category: String) {
+        selectedCategoryState.value = category
         sendUIState(MainUIState.Loading)
         firestoreManager.getBooksList(
             category,
@@ -47,6 +49,7 @@ class MainScreenViewModel @Inject constructor(
     }
 
     fun getFavoritesBooks() {
+        selectedCategoryState.value = "Favorites"
         sendUIState(MainUIState.Loading)
         firestoreManager.getFavoritesBooksList (
             onChangeState = { books ->

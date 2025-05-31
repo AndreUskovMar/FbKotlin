@@ -3,9 +3,13 @@ package ru.auskov.fbkotlin.main.components
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
+import ru.auskov.fbkotlin.ui.theme.Pink80
+import ru.auskov.fbkotlin.ui.theme.Purple40
+import ru.auskov.fbkotlin.ui.theme.PurpleGrey40
 
 @Composable
 fun BottomMenu(
@@ -19,7 +23,9 @@ fun BottomMenu(
         BottomMenuItem.Settings
     )
 
-    NavigationBar {
+    NavigationBar(
+        containerColor = Pink80
+    ) {
         items.forEach { item ->
             NavigationBarItem(
                 selected = selectedItem == item.title,
@@ -37,7 +43,14 @@ fun BottomMenu(
                 },
                 label = {
                     Text(text = item.title)
-                }
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = Purple40,
+                    selectedTextColor = Purple40,
+                    indicatorColor = Pink80,
+                    unselectedIconColor = PurpleGrey40,
+                    unselectedTextColor = PurpleGrey40
+                )
             )
         }
     }

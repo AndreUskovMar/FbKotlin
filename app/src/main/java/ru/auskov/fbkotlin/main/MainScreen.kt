@@ -39,6 +39,7 @@ import ru.auskov.fbkotlin.main.components.BottomMenu
 import ru.auskov.fbkotlin.main.components.BottomMenuItem
 import ru.auskov.fbkotlin.main.components.DrawerHeader
 import ru.auskov.fbkotlin.main.components.DrawerList
+import ru.auskov.fbkotlin.main.components.MainTopBar
 
 @Composable
 fun MainScreen(
@@ -128,6 +129,9 @@ fun MainScreen(
     ) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
+            topBar = {
+                MainTopBar(viewModel.selectedCategoryState.value)
+            },
             bottomBar = {
                 BottomMenu(
                     selectedItem = viewModel.selectedItemState.value,
