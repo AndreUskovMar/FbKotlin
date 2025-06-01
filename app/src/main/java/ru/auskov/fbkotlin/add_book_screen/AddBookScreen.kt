@@ -36,6 +36,8 @@ import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.ui.theme.Purple40
 //import android.util.Base64
 import android.util.Log
+import androidx.compose.ui.res.stringResource
+import ru.auskov.fbkotlin.R
 //import androidx.compose.ui.platform.LocalContext
 //import coil3.Bitmap
 import ru.auskov.fbkotlin.add_book_screen.data.AddBookScreenObject
@@ -119,7 +121,7 @@ fun AddBookScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Dogs by Nature",
+            text = stringResource(R.string.app_title),
             style = TextStyle(
                 fontSize = 46.sp,
                 lineHeight = 50.sp,
@@ -144,7 +146,7 @@ fun AddBookScreen(
         Spacer(modifier = Modifier.height(10.dp))
 
         RoundedTextInput(
-            label = "Title",
+            label = stringResource(R.string.title),
             value = title.value
         ) {
             title.value = it
@@ -153,7 +155,7 @@ fun AddBookScreen(
         Spacer(modifier = Modifier.height(10.dp))
 
         RoundedTextInput(
-            label = "Description",
+            label = stringResource(R.string.description),
             value = description.value,
             singleLine = false,
             maxLines = 5
@@ -164,7 +166,7 @@ fun AddBookScreen(
         Spacer(modifier = Modifier.height(10.dp))
 
         RoundedTextInput(
-            label = "Price",
+            label = stringResource(R.string.price),
             value = price.value
         ) {
             price.value = it
@@ -178,13 +180,13 @@ fun AddBookScreen(
                 .padding(horizontal = 50.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            RoundedButton(name = "Add Books Image") {
+            RoundedButton(name = stringResource(R.string.add_book_image)) {
                 imageLauncher.launch("image/*")
             }
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            RoundedButton(name = "Save New Book") {
+            RoundedButton(name = stringResource(R.string.save_book)) {
                 val book = Book(
                     key = navData.key,
                     name = title.value,

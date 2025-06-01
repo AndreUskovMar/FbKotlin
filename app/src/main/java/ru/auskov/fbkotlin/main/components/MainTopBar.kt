@@ -23,7 +23,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import ru.auskov.fbkotlin.R
 import ru.auskov.fbkotlin.ui.theme.Pink80
 import ru.auskov.fbkotlin.ui.theme.Purple40
 
@@ -52,7 +54,7 @@ fun MainTopBar(
                     SearchBarDefaults.InputField(
                         query = inputText,
                         placeholder = {
-                            Text(text = "Start ...")
+                            Text(text = stringResource(R.string.start))
                         },
                         onQueryChange = { text ->
                             inputText = text

@@ -6,14 +6,16 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.auskov.fbkotlin.R
 
 @Composable
 fun CustomAlertDialog(
     isShownDialog: Boolean,
-    title: String = "Reset password",
+    title: String = stringResource(R.string.reset_password),
     message: String = "",
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,

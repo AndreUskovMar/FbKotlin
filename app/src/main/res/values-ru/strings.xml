@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ФбКотлин</string>
+
+    <!-- Login screen -->
+    <string name="app_title">Собаки от Природы</string>
+    <string name="reset_password_message">Ссылка сброса пароля отправлена на имейл</string>
+    <string name="sign_in">Логин</string>
+    <string name="sign_up">Регистрация</string>
+    <string name="reset_password">Сбросить Пароль</string>
+    <string name="forget_password">Восстановить Пароль</string>
+    <string name="enter">Войти</string>
+    <string name="logout">Выйти</string>
+    <string name="password">Пароль</string>
+    <string name="email">Имейл</string>
+
+    <!-- Bottom navigation -->
+    <string name="home">Главная</string>
+    <string name="favourites">Избранные</string>
+    <string name="settings">Настройки</string>
+
+    <!-- Main screen -->
+    <string name="empty_list">Пустой список</string>
+    <string name="delete_book">Удалить книгу</string>
+    <string name="sure_delete_book">Вы уверены, что хотите удалить книгу?</string>
+
+    <string name="start">Старт …?</string>
+    <string name="admin_panel">Админ Панель</string>
+
+    <!-- Details screen -->
+    <string name="creator">Писатель</string>
+    <string name="creaing_year">Год издания</string>
+    <string name="buy_the">Купить за</string>
+
+    <!-- Add book screen -->
+    <string name="save_book">Сохранить новую книгу</string>
+    <string name="add_book_image">Добавить обложку книги</string>
+    <string name="price">Цена</string>
+    <string name="description">Описание</string>
+    <string name="title">Название</string>
+</resources>

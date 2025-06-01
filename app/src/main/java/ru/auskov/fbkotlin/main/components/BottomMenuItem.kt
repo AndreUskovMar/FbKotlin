@@ -4,22 +4,22 @@ import ru.auskov.fbkotlin.R
 
 sealed class BottomMenuItem(
     val route: String,
-    val title: String,
+    val titleId: Int,
     val iconId: Int
 ) {
     data object Home: BottomMenuItem(
         route = "",
-        title = "Home",
+        titleId = R.string.home,
         iconId = R.drawable.ic_home
     )
     data object Favourites: BottomMenuItem(
         route = "",
-        title = "Favourites",
+        titleId = R.string.favourites,
         iconId = R.drawable.ic_favorite
     )
     data object Settings: BottomMenuItem(
         route = "",
-        title = "Settings",
+        titleId = R.string.settings,
         iconId = R.drawable.ic_settings
     )
 }

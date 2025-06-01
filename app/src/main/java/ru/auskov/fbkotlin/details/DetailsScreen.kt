@@ -18,11 +18,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.Bitmap
 import coil3.compose.AsyncImage
+import ru.auskov.fbkotlin.R
 import ru.auskov.fbkotlin.components.RoundedButton
 import ru.auskov.fbkotlin.details.data.DetailsScreenObject
 
@@ -62,7 +64,7 @@ fun DetailsScreen(
                     .height(190.dp)
                 ) {
                     Text(
-                        text = "Автор",
+                        text = stringResource(R.string.creator),
                         color = Color.Gray
                     )
                     Text(
@@ -71,7 +73,7 @@ fun DetailsScreen(
                     )
 
                     Text(
-                        text = "Год издания",
+                        text = stringResource(R.string.creaing_year),
                         color = Color.Gray
                     )
                     Text(
@@ -104,7 +106,7 @@ fun DetailsScreen(
         }
 
         RoundedButton(
-            name = "Купить за ${navData.price}"
+            name = "${stringResource(R.string.creaing_year)} ${navData.price}"
         ) { }
     }
 }

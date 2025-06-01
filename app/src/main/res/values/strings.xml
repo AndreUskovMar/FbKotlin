@@ -1,4 +1,40 @@
 <resources>
     <string name="app_name">FbKotlin</string>
+
+    <!-- Login screen -->
+    <string name="app_title">Dogs by Nature</string>
     <string name="reset_password_message">Reset password link sent to email</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="forget_password">Forget Password</string>
+    <string name="enter">Enter</string>
+    <string name="logout">Logout</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+
+    <!-- Bottom navigation -->
+    <string name="home">Home</string>
+    <string name="favourites">Favourites</string>
+    <string name="settings">Settings</string>
+
+    <!-- Main screen -->
+    <string name="empty_list">Empty list</string>
+    <string name="delete_book">Delete book</string>
+    <string name="sure_delete_book">A you sure you want to delete book?</string>
+
+    <string name="start">Start …?</string>
+    <string name="admin_panel">Admin Panel</string>
+
+    <!-- Details screen -->
+    <string name="creator">Creator</string>
+    <string name="creaing_year">Creating year</string>
+    <string name="buy_the">Buy the</string>
+
+    <!-- Add book screen -->
+    <string name="save_book">Save New Book</string>
+    <string name="add_book_image">Add Books Image</string>
+    <string name="price">Price</string>
+    <string name="description">Description</string>
+    <string name="title">Title</string>
 </resources>

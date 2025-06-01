@@ -1,5 +1,6 @@
 package ru.auskov.fbkotlin.main
 
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,7 +19,7 @@ class MainScreenViewModel @Inject constructor(
 ): ViewModel() {
     val booksList = mutableStateOf(emptyList<Book>())
     val isEmptyListState = mutableStateOf(false)
-    val selectedItemState = mutableStateOf(BottomMenuItem.Home.title)
+    val selectedItemState = mutableIntStateOf(BottomMenuItem.Home.titleId)
     val selectedCategoryState = mutableStateOf("Favorites")
     val isShowDeleteAlertDialog = mutableStateOf(false)
 
@@ -66,7 +67,7 @@ class MainScreenViewModel @Inject constructor(
     fun onFavoriteClick(book: Book) {
         val updatedBooksList = firestoreManager.changeFavoriteState(booksList.value, book)
 
-        booksList.value = if (selectedItemState.value == BottomMenuItem.Favourites.title) {
+        booksList.value = if (selectedItemState.intValue == BottomMenuItem.Favourites.titleId) {
             updatedBooksList.filter {it.isFavorite}
         } else {
             updatedBooksList

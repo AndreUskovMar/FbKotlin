@@ -26,11 +26,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import kotlinx.coroutines.launch
+import ru.auskov.fbkotlin.R
 import ru.auskov.fbkotlin.components.CustomAlertDialog
 import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.login.data.MainScreenDataObject
@@ -110,7 +112,7 @@ fun MainScreen(
                             drawerState.close()
                         }
 
-                        viewModel.selectedItemState.value = BottomMenuItem.Favourites.title
+                        viewModel.selectedItemState.intValue = BottomMenuItem.Favourites.titleId
 
                         viewModel.getFavoritesBooks()
                     },
@@ -119,7 +121,7 @@ fun MainScreen(
                             drawerState.close()
                         }
 
-                        viewModel.selectedItemState.value = BottomMenuItem.Home.title
+                        viewModel.selectedItemState.intValue = BottomMenuItem.Home.titleId
 
                         viewModel.getAllBooks(category)
                     }
@@ -134,13 +136,13 @@ fun MainScreen(
             },
             bottomBar = {
                 BottomMenu(
-                    selectedItem = viewModel.selectedItemState.value,
+                    selectedItem = viewModel.selectedItemState.intValue,
                     onHomeClick = {
-                        viewModel.selectedItemState.value = BottomMenuItem.Home.title
+                        viewModel.selectedItemState.intValue = BottomMenuItem.Home.titleId
                         viewModel.getAllBooks("Fantasy")
                     },
                     onFavoritesClick = {
-                        viewModel.selectedItemState.value = BottomMenuItem.Favourites.title
+                        viewModel.selectedItemState.intValue = BottomMenuItem.Favourites.titleId
                         viewModel.getFavoritesBooks()
                     }
                 )
@@ -151,13 +153,13 @@ fun MainScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 )  {
-                    Text("Empty list", color = Color.White)
+                    Text(stringResource(R.string.empty_list), color = Color.White)
                 }
             }
 
             CustomAlertDialog(
-                title = "Delete book",
-                message = "A you sure you want to delete book?",
+                title = stringResource(R.string.delete_book),
+                message = stringResource(R.string.sure_delete_book),
                 isCancelable = true,
                 isShownDialog = viewModel.isShowDeleteAlertDialog.value,
                 onConfirm = {

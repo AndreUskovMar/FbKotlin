@@ -7,13 +7,14 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import ru.auskov.fbkotlin.ui.theme.Pink80
 import ru.auskov.fbkotlin.ui.theme.Purple40
 import ru.auskov.fbkotlin.ui.theme.PurpleGrey40
 
 @Composable
 fun BottomMenu(
-    selectedItem: String,
+    selectedItem: Int,
     onHomeClick: () -> Unit,
     onFavoritesClick: () -> Unit,
 ) {
@@ -28,21 +29,21 @@ fun BottomMenu(
     ) {
         items.forEach { item ->
             NavigationBarItem(
-                selected = selectedItem == item.title,
+                selected = selectedItem == item.titleId,
                 onClick = {
-                    when(item.title) {
-                        BottomMenuItem.Home.title -> onHomeClick()
-                        BottomMenuItem.Favourites.title -> onFavoritesClick()
+                    when(item.titleId) {
+                        BottomMenuItem.Home.titleId -> onHomeClick()
+                        BottomMenuItem.Favourites.titleId -> onFavoritesClick()
                     }
                 },
                 icon = {
                     Icon(
                         painter = painterResource(id = item.iconId),
-                        contentDescription = item.title
+                        contentDescription = item.titleId.toString()
                     )
                 },
                 label = {
-                    Text(text = item.title)
+                    Text(text = stringResource(item.titleId))
                 },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = Purple40,

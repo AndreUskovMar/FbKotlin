@@ -75,7 +75,7 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Dogs by Nature",
+            text = stringResource(R.string.app_title),
             style = TextStyle(
                 fontSize = 46.sp,
                 lineHeight = 50.sp,
@@ -92,7 +92,7 @@ fun LoginScreen(
 
         if (viewModel.user.value == null) {
             RoundedTextInput(
-                label = "Email",
+                label = stringResource(R.string.email),
                 value = viewModel.email.value
             ) {
                 viewModel.email.value = it
@@ -102,7 +102,7 @@ fun LoginScreen(
 
             if (!viewModel.resetPasswordState.value) {
                 RoundedTextInput(
-                    label = "Password",
+                    label = stringResource(R.string.password),
                     value = viewModel.password.value,
                     isPassword = true
                 ) {
@@ -127,7 +127,7 @@ fun LoginScreen(
                         .padding(horizontal = 50.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    RoundedButton(name = "Sign In") {
+                    RoundedButton(name = stringResource(R.string.sign_in)) {
                         viewModel.signIn(
                             onSignInSuccess = { navData ->
                                 onNavigateToMainScreen(navData)
@@ -137,7 +137,7 @@ fun LoginScreen(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    RoundedButton(name = "Sign Up") {
+                    RoundedButton(name = stringResource(R.string.sign_up)) {
                         viewModel.signUp(
                             onSignUpSuccess = { navData ->
                                 onNavigateToMainScreen(navData)
@@ -146,14 +146,14 @@ fun LoginScreen(
                     }
                 }
             } else {
-                RoundedButton(name = "Reset Password") {
+                RoundedButton(name = stringResource(R.string.reset_password)) {
                     viewModel.resetPassword()
                 }
             }
 
             if (!viewModel.resetPasswordState.value) {
                 Text(
-                    text = "Forget Password",
+                    text = stringResource(R.string.forget_password),
                     color = Color.Blue,
                     modifier = Modifier.clickable {
                         viewModel.error.value = ""
@@ -162,7 +162,7 @@ fun LoginScreen(
                 )
             }
         } else {
-            RoundedButton(name = "Enter") {
+            RoundedButton(name = stringResource(R.string.enter)) {
                 onNavigateToMainScreen(
                     MainScreenDataObject(
                         viewModel.user.value!!.uid,
@@ -173,7 +173,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            RoundedButton(name = "Logout") {
+            RoundedButton(name = stringResource(R.string.logout)) {
                 viewModel.logout()
             }
         }

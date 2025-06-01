@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.auskov.fbkotlin.R
 import ru.auskov.fbkotlin.ui.theme.LightGreen
@@ -66,7 +67,7 @@ fun DrawerList(
                     onAdminClick()
                 }
             ) {
-                Text("Admin Panel", color = Color.Blue)
+                Text(stringResource(R.string.admin_panel), color = Color.Blue)
             }
         }
     }
