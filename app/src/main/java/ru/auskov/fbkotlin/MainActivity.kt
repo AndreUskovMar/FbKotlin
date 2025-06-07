@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
                                         key = book.key,
                                         name = book.name,
                                         description = book.description,
-                                        category = book.category,
+                                        categoryIndex = book.categoryIndex,
                                         price = book.price,
                                         imageUrl = book.imageUrl,
                                     )

@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import coil3.Bitmap
 import coil3.compose.AsyncImage
 import ru.auskov.fbkotlin.data.Book
+import ru.auskov.fbkotlin.main.utils.Categories
 
 @Preview(showBackground = true)
 @Composable
@@ -42,7 +43,7 @@ fun BookListItem(
     book: Book = Book(
         name = "Title",
         description = "Description",
-        category = "Category",
+        categoryIndex = Categories.FANTASY,
         price = "100$"
     ),
     onEditBook: (Book) -> Unit = {},

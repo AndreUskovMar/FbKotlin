@@ -39,14 +39,14 @@ class FirestoreManager(
     }
 
     fun getBooksList(
-        category: String,
+        categoryIndex: Int,
         onChangeState: (List<Book>) -> Unit,
         onFailure: (message: String) -> Unit
     ) {
         getFavoriteIdsList(
             onSuccess = {listIds ->
                 db.collection("books")
-                    .whereEqualTo("category", category)
+                    .whereEqualTo("category", categoryIndex)
                     .get()
                     .addOnSuccessListener { task ->
                         val booksList = task.toObjects(Book::class.java).map { book ->

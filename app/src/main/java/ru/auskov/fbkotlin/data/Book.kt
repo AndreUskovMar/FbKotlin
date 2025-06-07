@@ -1,10 +1,12 @@
 package ru.auskov.fbkotlin.data
 
+import ru.auskov.fbkotlin.main.utils.Categories
+
 data class Book(
     val key: String = "",
     val name: String = "",
     val description: String = "",
-    val category: String = "",
+    val categoryIndex: Int = Categories.FANTASY,
     val price: String = "",
     val imageUrl: String = "",
     val isFavorite: Boolean = false

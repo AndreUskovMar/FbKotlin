@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.main.components.BottomMenuItem
+import ru.auskov.fbkotlin.main.utils.Categories
 import ru.auskov.fbkotlin.utils.firebase.FirestoreManager
 
 @HiltViewModel
@@ -20,7 +21,7 @@ class MainScreenViewModel @Inject constructor(
     val booksList = mutableStateOf(emptyList<Book>())
     val isEmptyListState = mutableStateOf(false)
     val selectedItemState = mutableIntStateOf(BottomMenuItem.Home.titleId)
-    val selectedCategoryState = mutableStateOf("Favorites")
+    val selectedCategoryState = mutableIntStateOf(Categories.FAVORITES)
     val isShowDeleteAlertDialog = mutableStateOf(false)
 
     var bookToDelete: Book? = null
@@ -33,11 +34,11 @@ class MainScreenViewModel @Inject constructor(
         _uiState.emit(state)
     }
 
-    fun getAllBooks(category: String) {
-        selectedCategoryState.value = category
+    fun getAllBooks(categoryIndex: Int) {
+        selectedCategoryState.intValue = categoryIndex
         sendUIState(MainUIState.Loading)
         firestoreManager.getBooksList(
-            category,
+            categoryIndex,
             onChangeState = { books ->
                 isEmptyListState.value = books.isEmpty()
                 booksList.value = books
@@ -50,7 +51,7 @@ class MainScreenViewModel @Inject constructor(
     }
 
     fun getFavoritesBooks() {
-        selectedCategoryState.value = "Favorites"
+        selectedCategoryState.intValue = Categories.FAVORITES
         sendUIState(MainUIState.Loading)
         firestoreManager.getFavoritesBooksList (
             onChangeState = { books ->

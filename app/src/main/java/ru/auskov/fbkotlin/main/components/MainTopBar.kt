@@ -23,16 +23,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.auskov.fbkotlin.R
+import ru.auskov.fbkotlin.main.utils.Categories
 import ru.auskov.fbkotlin.ui.theme.Pink80
 import ru.auskov.fbkotlin.ui.theme.Purple40
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainTopBar(
-    title: String
+    titleId: Int
 ) {
     var targetState by remember {
         mutableStateOf(false)
@@ -105,7 +107,10 @@ fun MainTopBar(
         } else {
             TopAppBar(
                 title = {
-                    Text(text = title)
+                    Text(text = if (titleId == Categories.FAVORITES)
+                        stringResource(R.string.favourites)
+                    else
+                        stringArrayResource(R.array.category_array)[titleId])
                 },
                 actions = {
                     IconButton(

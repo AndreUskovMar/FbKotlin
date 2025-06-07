@@ -42,6 +42,7 @@ import ru.auskov.fbkotlin.main.components.BottomMenuItem
 import ru.auskov.fbkotlin.main.components.DrawerHeader
 import ru.auskov.fbkotlin.main.components.DrawerList
 import ru.auskov.fbkotlin.main.components.MainTopBar
+import ru.auskov.fbkotlin.main.utils.Categories
 
 @Composable
 fun MainScreen(
@@ -73,7 +74,7 @@ fun MainScreen(
 
     LaunchedEffect(Unit) {
         if (viewModel.booksList.value.isEmpty()) {
-            viewModel.getAllBooks("Fantasy")
+            viewModel.getAllBooks(Categories.FANTASY)
         }
 
         viewModel.uiState.collect { state ->
@@ -116,14 +117,14 @@ fun MainScreen(
 
                         viewModel.getFavoritesBooks()
                     },
-                    onCategoryClick = {category ->
+                    onCategoryClick = {categoryIndex ->
                         coroutineScope.launch {
                             drawerState.close()
                         }
 
                         viewModel.selectedItemState.intValue = BottomMenuItem.Home.titleId
 
-                        viewModel.getAllBooks(category)
+                        viewModel.getAllBooks(categoryIndex)
                     }
                 )
             }
@@ -132,14 +133,14 @@ fun MainScreen(
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
-                MainTopBar(viewModel.selectedCategoryState.value)
+                MainTopBar(viewModel.selectedCategoryState.intValue)
             },
             bottomBar = {
                 BottomMenu(
                     selectedItem = viewModel.selectedItemState.intValue,
                     onHomeClick = {
                         viewModel.selectedItemState.intValue = BottomMenuItem.Home.titleId
-                        viewModel.getAllBooks("Fantasy")
+                        viewModel.getAllBooks(Categories.FANTASY)
                     },
                     onFavoritesClick = {
                         viewModel.selectedItemState.intValue = BottomMenuItem.Favourites.titleId

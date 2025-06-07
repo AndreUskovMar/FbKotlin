@@ -30,12 +30,13 @@ import coil3.compose.rememberAsyncImagePainter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import ru.auskov.fbkotlin.components.RoundedButton
-import ru.auskov.fbkotlin.components.RoundedDropDownMenu
+//import ru.auskov.fbkotlin.components.RoundedDropDownMenu
 import ru.auskov.fbkotlin.components.RoundedTextInput
 import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.ui.theme.Purple40
 //import android.util.Base64
 import android.util.Log
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.res.stringResource
 import ru.auskov.fbkotlin.R
 //import androidx.compose.ui.platform.LocalContext
@@ -58,7 +59,7 @@ fun AddBookScreen(
     // val cr = LocalContext.current.contentResolver
 
     val category = remember {
-        mutableStateOf(navData.category)
+        mutableIntStateOf(navData.categoryIndex)
     }
 
     val title = remember {
@@ -136,12 +137,12 @@ fun AddBookScreen(
             modifier = Modifier.padding(bottom = 50.dp),
         )
 
-        RoundedDropDownMenu(
-            category = category.value,
-            onOptionSelected = { selectedCategory ->
-                category.value = selectedCategory
-            }
-        )
+//        RoundedDropDownMenu(
+//            category = category.value,
+//            onOptionSelected = { selectedCategory ->
+//                category.value = selectedCategory
+//            }
+//        )
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -192,7 +193,7 @@ fun AddBookScreen(
                     name = title.value,
                     description = description.value,
                     price = price.value,
-                    category = category.value
+                    categoryIndex = category.intValue
                 )
 
                 // val imageBase64 = if (imageUri.value != null ) convertImageToBase64(
