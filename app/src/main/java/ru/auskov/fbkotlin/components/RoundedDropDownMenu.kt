@@ -11,35 +11,28 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.unit.dp
+import ru.auskov.fbkotlin.R
 import ru.auskov.fbkotlin.ui.theme.LightGreen
 
 @Composable
 fun RoundedDropDownMenu(
-    category: String,
-    onOptionSelected: (String) -> Unit
+    categoryIndex: Int,
+    onOptionSelected: (Int) -> Unit
 ) {
-    val listItems = listOf(
-        "Fantasy",
-        "Drama",
-        "Bestsellers"
-    )
+    val listItems = stringArrayResource(R.array.category_array)
 
     val expanded = remember {
         mutableStateOf(false)
     }
 
-    LaunchedEffect(Unit) {
-        if (category.isEmpty()) {
-            onOptionSelected(listItems[1])
-        }
-    }
+    val categoryOption = listItems[categoryIndex]
 
     Box (
         modifier = Modifier
@@ -52,14 +45,14 @@ fun RoundedDropDownMenu(
             }
             .padding(horizontal = 15.dp, vertical = 17.dp)
     ) {
-        Text(category)
+        Text(categoryOption)
         DropdownMenu(
             expanded = expanded.value,
             onDismissRequest = {
                 expanded.value = false
             }
         ) {
-            listItems.forEach { option ->
+            listItems.forEachIndexed { index, option ->
                 DropdownMenuItem(
                     text = {
                         Text(option)
@@ -67,7 +60,7 @@ fun RoundedDropDownMenu(
                     onClick = {
                         // selectedItem.value = option
                         expanded.value = false
-                        onOptionSelected(option)
+                        onOptionSelected(index)
                     }
                 )
             }

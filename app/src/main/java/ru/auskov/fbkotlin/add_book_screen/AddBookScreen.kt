@@ -2,7 +2,7 @@ package ru.auskov.fbkotlin.add_book_screen
 
 //import android.content.ContentResolver
 //import android.graphics.BitmapFactory
-import android.net.Uri
+//import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -27,59 +27,36 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 import ru.auskov.fbkotlin.components.RoundedButton
-//import ru.auskov.fbkotlin.components.RoundedDropDownMenu
+import ru.auskov.fbkotlin.components.RoundedDropDownMenu
 import ru.auskov.fbkotlin.components.RoundedTextInput
-import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.ui.theme.Purple40
 //import android.util.Base64
-import android.util.Log
-import androidx.compose.runtime.mutableIntStateOf
+import android.widget.Toast
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import ru.auskov.fbkotlin.R
-//import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalContext
 //import coil3.Bitmap
 import ru.auskov.fbkotlin.add_book_screen.data.AddBookScreenObject
+import ru.auskov.fbkotlin.main.MainScreenViewModel
 
 @Composable
 fun AddBookScreen(
     navData: AddBookScreenObject = AddBookScreenObject(),
-    onSavedSuccess: () -> Unit = {}
+    onSavedSuccess: () -> Unit = {},
+    viewModel: AddBookScreenViewModel = hiltViewModel()
 ) {
-    val firestore = remember {
-        FirebaseFirestore.getInstance()
-    }
-
-    val storage = remember {
-        FirebaseStorage.getInstance()
-    }
-
-    // val cr = LocalContext.current.contentResolver
-
-    val category = remember {
-        mutableIntStateOf(navData.categoryIndex)
-    }
-
-    val title = remember {
-        mutableStateOf(navData.name)
-    }
-
-    val description = remember {
-        mutableStateOf(navData.description)
-    }
-
-    val price = remember {
-        mutableStateOf(navData.price)
-    }
+    val context = LocalContext.current
+    // val cr = context.contentResolver
 
     val navImageUrl = remember {
         mutableStateOf(navData.imageUrl)
     }
 
-    val imageUri = remember {
-        mutableStateOf<Uri?>(null)
+    val isShownIndicator = remember {
+        mutableStateOf(false)
     }
 
     //    val imageBitmap = remember {
@@ -100,13 +77,32 @@ fun AddBookScreen(
     ) { uri ->
         // imageBitmap.value = null
         navImageUrl.value = ""
-        imageUri.value = uri
+        viewModel.imageUri.value = uri
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.setDefaultsData(navData)
+
+        viewModel.uiState.collect { state ->
+            when(state) {
+                is MainScreenViewModel.MainUIState.Loading -> {
+                    isShownIndicator.value = true
+                }
+                is MainScreenViewModel.MainUIState.Success -> {
+                    isShownIndicator.value = false
+                }
+                is MainScreenViewModel.MainUIState.Error -> {
+                    isShownIndicator.value = false
+                    Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     Image(
         painter = rememberAsyncImagePainter(
             // model = imageBitmap.value ?: imageUri.value
-            model = navImageUrl.value.ifEmpty { imageUri.value }
+            model = navImageUrl.value.ifEmpty { viewModel.imageUri.value }
         ),
         contentDescription = "Add Book",
         modifier = Modifier.fillMaxSize(),
@@ -137,40 +133,40 @@ fun AddBookScreen(
             modifier = Modifier.padding(bottom = 50.dp),
         )
 
-//        RoundedDropDownMenu(
-//            category = category.value,
-//            onOptionSelected = { selectedCategory ->
-//                category.value = selectedCategory
-//            }
-//        )
+        RoundedDropDownMenu(
+            categoryIndex = viewModel.categoryIndex.intValue,
+            onOptionSelected = { selectedCategoryIndex ->
+                viewModel.categoryIndex.intValue = selectedCategoryIndex
+            }
+        )
 
         Spacer(modifier = Modifier.height(10.dp))
 
         RoundedTextInput(
             label = stringResource(R.string.title),
-            value = title.value
+            value = viewModel.title.value
         ) {
-            title.value = it
+            viewModel.title.value = it
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
         RoundedTextInput(
             label = stringResource(R.string.description),
-            value = description.value,
+            value = viewModel.description.value,
             singleLine = false,
             maxLines = 5
         ) {
-            description.value = it
+            viewModel.description.value = it
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
         RoundedTextInput(
             label = stringResource(R.string.price),
-            value = price.value
+            value = viewModel.price.value
         ) {
-            price.value = it
+            viewModel.price.value = it
         }
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -187,122 +183,20 @@ fun AddBookScreen(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            RoundedButton(name = stringResource(R.string.save_book)) {
-                val book = Book(
-                    key = navData.key,
-                    name = title.value,
-                    description = description.value,
-                    price = price.value,
-                    categoryIndex = category.intValue
-                )
+            RoundedButton(
+                name = stringResource(R.string.save_book),
+                isLoadingIndicator = isShownIndicator.value
+            ) {
+                viewModel.uploadBook(navData) {
+                    onSavedSuccess()
+                }
 
                 // val imageBase64 = if (imageUri.value != null ) convertImageToBase64(
                 //     imageUri.value as Uri,
                 //     cr
                 // ) else navData.imageUrl
 
-                if (imageUri.value != null) {
-                    //  convertImageToBase64(
-                    //      imageUri.value as Uri,
-                    //      cr
-                    //  )
-
-                    saveBookImage(
-                        prevImageUrl = navData.imageUrl,
-                        uri = imageUri.value as Uri,
-                        book = book,
-                        storage = storage,
-                        firestore = firestore,
-                        onSuccess = {
-                            onSavedSuccess()
-                        },
-                        onError = {
-
-                        }
-                    )
-                } else {
-                    saveBookToFireStore(
-                        firestore,
-                        book = book.copy(imageUrl = navData.imageUrl),
-                        onSuccess = {
-                            onSavedSuccess()
-                        },
-                        onError = {
-
-                        }
-                    )
-                }
             }
         }
     }
-}
-
-//private fun convertImageToBase64(uri: Uri, contentResolver: ContentResolver): String {
-//    val inputStream = contentResolver.openInputStream(uri)
-//
-//    val bytes = inputStream?.readBytes()
-//
-//    return bytes?.let {
-//        Base64.encodeToString(it, Base64.DEFAULT)
-//    } ?: ""
-//}
-
-private fun saveBookImage(
-    prevImageUrl: String,
-    uri: Uri,
-    book: Book,
-    storage: FirebaseStorage,
-    firestore: FirebaseFirestore,
-    onSuccess: () -> Unit,
-    onError: () -> Unit,
-) {
-    val timestamp = System.currentTimeMillis()
-    val storageRef = if (prevImageUrl.isEmpty()) {
-        storage.reference
-            .child("book_images")
-            .child("image_$timestamp.png")
-    } else {
-        storage.getReferenceFromUrl(prevImageUrl)
-    }
-
-    val uploadTask = storageRef.putFile(uri)
-
-    uploadTask.addOnCompleteListener {
-        storageRef.downloadUrl.addOnSuccessListener { url ->
-            saveBookToFireStore(
-                firestore = firestore,
-                book = book.copy(imageUrl = url.toString()),
-                onSuccess = {
-                    onSuccess()
-                },
-                onError = {
-                    onError()
-                }
-            )
-        }
-    }
-}
-
-private fun saveBookToFireStore(
-    firestore: FirebaseFirestore,
-    book: Book,
-    onSuccess: () -> Unit,
-    onError: () -> Unit,
-) {
-    val db = firestore.collection("books")
-    val key = book.key.ifEmpty {
-        db.document().id
-    }
-
-    db.document(key)
-        .set(
-            book.copy(key = key)
-        )
-        .addOnSuccessListener {
-            onSuccess()
-        }
-        .addOnFailureListener {
-            Log.d("MyLog", it.message.toString())
-            onError()
-        }
 }

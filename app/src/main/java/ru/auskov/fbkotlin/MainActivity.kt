@@ -68,10 +68,13 @@ class MainActivity : ComponentActivity() {
                     }
                     composable<AddBookScreenObject> {navEntry ->
                         val navData = navEntry.toRoute<AddBookScreenObject>()
-                        AddBookScreen(navData) {
-                            Log.d("MyLog", "Success")
-                            navController.popBackStack()
-                        }
+                        AddBookScreen(
+                            navData,
+                            onSavedSuccess = {
+                                Log.d("MyLog", "Success")
+                                navController.popBackStack()
+                            }
+                        )
                     }
                     composable<DetailsScreenObject> { navEntry ->
                         val navData = navEntry.toRoute<DetailsScreenObject>()

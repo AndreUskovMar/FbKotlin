@@ -63,7 +63,7 @@ fun MainScreen(
     }
 
     val isShownIndicator = remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
     LaunchedEffect(Unit) {
@@ -74,6 +74,7 @@ fun MainScreen(
 
     LaunchedEffect(Unit) {
         if (viewModel.booksList.value.isEmpty()) {
+            isShownIndicator.value = true
             viewModel.getAllBooks(Categories.FANTASY)
         }
 
@@ -107,6 +108,8 @@ fun MainScreen(
                         }
 
                         onAdminClick()
+
+                        viewModel.booksList.value = emptyList()
                     },
                     onFavoritesClick = {
                         coroutineScope.launch {
@@ -195,6 +198,7 @@ fun MainScreen(
                         book,
                         onEditBook = {
                             onBookEditClick(book)
+                            viewModel.booksList.value = emptyList()
                         },
                         onDeleteBook = {
                             viewModel.isShowDeleteAlertDialog.value = true
