@@ -4,8 +4,11 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -16,13 +19,16 @@ import ru.auskov.fbkotlin.utils.firebase.FirestoreManager
 
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
-    private val firestoreManager: FirestoreManager
+    private val firestoreManager: FirestoreManager,
+    pager: Flow<PagingData<Book>>
 ): ViewModel() {
     val booksList = mutableStateOf(emptyList<Book>())
     val isEmptyListState = mutableStateOf(false)
     val selectedItemState = mutableIntStateOf(BottomMenuItem.Home.titleId)
     val selectedCategoryState = mutableIntStateOf(Categories.FAVORITES)
     val isShowDeleteAlertDialog = mutableStateOf(false)
+
+    val books: Flow<PagingData<Book>> = pager.cachedIn(viewModelScope)
 
     var bookToDelete: Book? = null
 
