@@ -21,13 +21,13 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.auskov.fbkotlin.R
+import ru.auskov.fbkotlin.main.utils.Categories
 import ru.auskov.fbkotlin.ui.theme.LightGreen
 
 @Composable
 fun DrawerList(
     isAdminState: Boolean,
     onAdminClick: () -> Unit,
-    onFavoritesClick: () -> Unit,
     onCategoryClick: (Int) -> Unit
 ) {
     val listItems = stringArrayResource(id = R.array.category_array)
@@ -43,7 +43,7 @@ fun DrawerList(
 
         Column {
             DrawerListItem(name = stringResource(R.string.favourites)) {
-                onFavoritesClick()
+                onCategoryClick(Categories.FAVORITES)
             }
 
             LazyColumn(

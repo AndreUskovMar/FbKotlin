@@ -114,21 +114,15 @@ fun MainScreen(
 
                         viewModel.booksList.value = emptyList()
                     },
-                    onFavoritesClick = {
-                        coroutineScope.launch {
-                            drawerState.close()
-                        }
-
-                        viewModel.selectedItemState.intValue = BottomMenuItem.Favourites.titleId
-
-                        viewModel.getFavoritesBooks()
-                    },
                     onCategoryClick = {categoryIndex ->
                         coroutineScope.launch {
                             drawerState.close()
                         }
 
-                        viewModel.selectedItemState.intValue = BottomMenuItem.Home.titleId
+                        books.refresh()
+
+                        viewModel.selectedItemState.intValue = if (categoryIndex == Categories.FAVORITES)
+                            BottomMenuItem.Favourites.titleId else BottomMenuItem.Home.titleId
 
                         viewModel.getAllBooks(categoryIndex)
                     }
@@ -147,10 +141,11 @@ fun MainScreen(
                     onHomeClick = {
                         viewModel.selectedItemState.intValue = BottomMenuItem.Home.titleId
                         viewModel.getAllBooks(Categories.FANTASY)
+                        books.refresh()
                     },
                     onFavoritesClick = {
                         viewModel.selectedItemState.intValue = BottomMenuItem.Favourites.titleId
-                        viewModel.getFavoritesBooks()
+                        viewModel.getAllBooks(Categories.FAVORITES)
                     }
                 )
             }
@@ -170,7 +165,7 @@ fun MainScreen(
                 isCancelable = true,
                 isShownDialog = viewModel.isShowDeleteAlertDialog.value,
                 onConfirm = {
-                    viewModel.deleteBook()
+                    // viewModel.deleteBook()
                 },
                 onDismiss = {
                     viewModel.isShowDeleteAlertDialog.value = false
@@ -210,7 +205,7 @@ fun MainScreen(
                                 viewModel.bookToDelete = book
                             },
                             onFavoriteClick = {
-                                viewModel.onFavoriteClick(book)
+                                // viewModel.onFavoriteClick(book)
                             },
                             onBookClick = {
                                 onBookClick(book)
