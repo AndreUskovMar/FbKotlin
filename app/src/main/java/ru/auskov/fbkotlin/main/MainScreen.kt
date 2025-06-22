@@ -47,7 +47,7 @@ import ru.auskov.fbkotlin.main.utils.Categories
 
 @Composable
 fun MainScreen(
-    viewModel: MainScreenViewModel  = hiltViewModel(),
+    viewModel: MainScreenViewModel = hiltViewModel(),
     navData: MainScreenDataObject,
     onBookClick: (Book) -> Unit,
     onBookEditClick: (Book) -> Unit,
@@ -103,58 +103,46 @@ fun MainScreen(
         drawerContent = {
             Column(modifier = Modifier.fillMaxWidth(0.7f)) {
                 DrawerHeader(navData.email)
-                DrawerList(
-                    isAdminState.value,
-                    onAdminClick = {
-                        coroutineScope.launch {
-                            drawerState.close()
-                        }
-
-                        onAdminClick()
-
-                        viewModel.booksList.value = emptyList()
-                    },
-                    onCategoryClick = {categoryIndex ->
-                        coroutineScope.launch {
-                            drawerState.close()
-                        }
-
-                        books.refresh()
-
-                        viewModel.selectedItemState.intValue = if (categoryIndex == Categories.FAVORITES)
-                            BottomMenuItem.Favourites.titleId else BottomMenuItem.Home.titleId
-
-                        viewModel.getAllBooks(categoryIndex)
+                DrawerList(isAdminState.value, onAdminClick = {
+                    coroutineScope.launch {
+                        drawerState.close()
                     }
-                )
+
+                    onAdminClick()
+
+                    // viewModel.booksList.value = emptyList()
+                }, onCategoryClick = { categoryIndex ->
+                    coroutineScope.launch {
+                        drawerState.close()
+                    }
+
+                    books.refresh()
+
+                    viewModel.selectedItemState.intValue =
+                        if (categoryIndex == Categories.FAVORITES) BottomMenuItem.Favourites.titleId else BottomMenuItem.Home.titleId
+
+                    viewModel.getBooksByCategory(categoryIndex)
+                })
             }
         },
     ) {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            topBar = {
-                MainTopBar(viewModel.selectedCategoryState.intValue)
-            },
-            bottomBar = {
-                BottomMenu(
-                    selectedItem = viewModel.selectedItemState.intValue,
-                    onHomeClick = {
-                        viewModel.selectedItemState.intValue = BottomMenuItem.Home.titleId
-                        viewModel.getAllBooks(Categories.FANTASY)
-                        books.refresh()
-                    },
-                    onFavoritesClick = {
-                        viewModel.selectedItemState.intValue = BottomMenuItem.Favourites.titleId
-                        viewModel.getAllBooks(Categories.FAVORITES)
-                    }
-                )
-            }
-        ) { paddingValue ->
+        Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
+            MainTopBar(viewModel.selectedCategoryState.intValue)
+        }, bottomBar = {
+            BottomMenu(selectedItem = viewModel.selectedItemState.intValue, onHomeClick = {
+                viewModel.selectedItemState.intValue = BottomMenuItem.Home.titleId
+                viewModel.getBooksByCategory(Categories.FANTASY)
+                books.refresh()
+            }, onFavoritesClick = {
+                viewModel.selectedItemState.intValue = BottomMenuItem.Favourites.titleId
+                viewModel.getBooksByCategory(Categories.FAVORITES)
+                books.refresh()
+            })
+        }) { paddingValue ->
             if (viewModel.isEmptyListState.value) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                )  {
+                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                ) {
                     Text(stringResource(R.string.empty_list), color = Color.White)
                 }
             }
@@ -170,47 +158,35 @@ fun MainScreen(
                 onDismiss = {
                     viewModel.isShowDeleteAlertDialog.value = false
                     viewModel.bookToDelete = null
-                }
-            )
+                })
 
             if (isShownIndicator.value) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(
-                        modifier = Modifier.size(70.dp),
-                        color = Color.Green
+                        modifier = Modifier.size(70.dp), color = Color.Green
                     )
                 }
             }
 
             LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier
-                    .padding(paddingValue)
+                columns = GridCells.Fixed(2), modifier = Modifier.padding(paddingValue)
             ) {
                 items(books.itemCount) { bookIndex ->
                     val book = books[bookIndex]
                     book?.let {
-                        BookListItem(
-                            isAdminState.value,
-                            it,
-                            onEditBook = {
-                                onBookEditClick(book)
-                                viewModel.booksList.value = emptyList()
-                            },
-                            onDeleteBook = {
-                                viewModel.isShowDeleteAlertDialog.value = true
-                                viewModel.bookToDelete = book
-                            },
-                            onFavoriteClick = {
-                                // viewModel.onFavoriteClick(book)
-                            },
-                            onBookClick = {
-                                onBookClick(book)
-                            }
-                        )
+                        BookListItem(isAdminState.value, it, onEditBook = {
+                            onBookEditClick(book)
+                            //viewModel.booksList.value = emptyList()
+                        }, onDeleteBook = {
+                            viewModel.isShowDeleteAlertDialog.value = true
+                            viewModel.bookToDelete = book
+                        }, onFavoriteClick = {
+                            viewModel.onFavoriteClick(book, books.itemSnapshotList.items)
+                        }, onBookClick = {
+                            onBookClick(book)
+                        })
                     }
                 }
             }
