@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.main.components.BottomMenuItem
 import ru.auskov.fbkotlin.main.utils.Categories
@@ -25,13 +26,13 @@ class MainScreenViewModel @Inject constructor(
     private val firestoreManager: FirestoreManagerPaging,
     pager: Flow<PagingData<Book>>
 ) : ViewModel() {
-    val isEmptyListState = mutableStateOf(false)
+//    val isEmptyListState = mutableStateOf(false)
     val selectedItemState = mutableIntStateOf(BottomMenuItem.Home.titleId)
     val selectedCategoryState = mutableIntStateOf(Categories.FANTASY)
     val isShowDeleteAlertDialog = mutableStateOf(false)
-    var deleteFavBook = false
+    var isDeleteBook = false
 
-    val mutableBooksList = MutableStateFlow<List<Book>>(emptyList<Book>())
+    private val mutableBooksList = MutableStateFlow<List<Book>>(emptyList())
     val books: Flow<PagingData<Book>> =
         pager.cachedIn(viewModelScope).combine(mutableBooksList) { pagingData, booksList ->
             val pgData = pagingData.map { book ->
@@ -42,8 +43,8 @@ class MainScreenViewModel @Inject constructor(
                 updatedBook ?: book
             }
 
-            if (deleteFavBook) {
-                deleteFavBook = false
+            if (isDeleteBook) {
+                isDeleteBook = false
                 pgData.filter { book ->
                     booksList.find {
                         book.key == it.key
@@ -60,9 +61,9 @@ class MainScreenViewModel @Inject constructor(
 
     val uiState = _uiState.asSharedFlow()
 
-//    private fun sendUIState(state: MainUIState) = viewModelScope.launch {
-//        _uiState.emit(state)
-//    }
+    private fun sendUIState(state: MainUIState) = viewModelScope.launch {
+        _uiState.emit(state)
+    }
 
     fun getBooksByCategory(categoryIndex: Int) {
         selectedCategoryState.intValue = categoryIndex
@@ -74,30 +75,29 @@ class MainScreenViewModel @Inject constructor(
 
         mutableBooksList.value =
             if (selectedItemState.intValue == BottomMenuItem.Favourites.titleId) {
-                deleteFavBook = true
+                isDeleteBook = true
                 updatedBooksList.filter { it.isFavorite }
             } else {
                 updatedBooksList
             }
-
-        // isEmptyListState.value = mutableBooksList.value.isEmpty()
     }
 
-//    fun deleteBook() {
-//        bookToDelete?.let { book ->
-//            firestoreManager.deleteBook(
-//                book,
-//                onSuccess = {
-//                    booksList.value = booksList.value.filter { it -> it.key != book.key }
-//                    isShowDeleteAlertDialog.value = false
-//                    bookToDelete = null
-//                },
-//                onFailure = { message ->
-//                    sendUIState(MainUIState.Error(message))
-//                }
-//            )
-//        }
-//    }
+    fun deleteBook(booksList: List<Book>) {
+        bookToDelete?.let { book ->
+            firestoreManager.deleteBook(
+                book,
+                onSuccess = {
+                    isDeleteBook = true
+                    mutableBooksList.value = booksList.filter { it -> it.key != book.key }
+                    isShowDeleteAlertDialog.value = false
+                    bookToDelete = null
+                },
+                onFailure = { message ->
+                    sendUIState(MainUIState.Error(message))
+                }
+            )
+        }
+    }
 
     sealed class MainUIState {
         data object Loading : MainUIState()

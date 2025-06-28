@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
@@ -65,10 +66,6 @@ fun MainScreen(
         mutableStateOf(false)
     }
 
-    val isShownIndicator = remember {
-        mutableStateOf(false)
-    }
-
     LaunchedEffect(Unit) {
         isAdmin { isAdmin ->
             isAdminState.value = isAdmin
@@ -76,24 +73,17 @@ fun MainScreen(
     }
 
     LaunchedEffect(Unit) {
-        // if (viewModel.booksList.value.isEmpty()) {
-        //     isShownIndicator.value = true
-        //     viewModel.getAllBooks(Categories.FANTASY)
-        // }
-
-        viewModel.uiState.collect { state ->
-            when(state) {
-                is MainScreenViewModel.MainUIState.Loading -> {
-                    isShownIndicator.value = true
-                }
-                is MainScreenViewModel.MainUIState.Success -> {
-                    isShownIndicator.value = false
-                }
-                is MainScreenViewModel.MainUIState.Error -> {
-                    isShownIndicator.value = false
-                    Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
-                }
+        viewModel.uiState.collect { uiState ->
+            if (uiState is MainScreenViewModel.MainUIState.Error) {
+                Toast.makeText(context, uiState.message, Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    LaunchedEffect(books.loadState.refresh) {
+        if (books.loadState.refresh is LoadState.Error) {
+            val errorMessage = (books.loadState.refresh as LoadState.Error).error.message
+            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -139,7 +129,7 @@ fun MainScreen(
                 books.refresh()
             })
         }) { paddingValue ->
-            if (viewModel.isEmptyListState.value) {
+            if (books.itemCount == 0 && books.loadState.refresh is LoadState.NotLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                 ) {
@@ -153,14 +143,14 @@ fun MainScreen(
                 isCancelable = true,
                 isShownDialog = viewModel.isShowDeleteAlertDialog.value,
                 onConfirm = {
-                    // viewModel.deleteBook()
+                    viewModel.deleteBook(books.itemSnapshotList.items)
                 },
                 onDismiss = {
                     viewModel.isShowDeleteAlertDialog.value = false
                     viewModel.bookToDelete = null
                 })
 
-            if (isShownIndicator.value) {
+            if (books.loadState.refresh is LoadState.Loading) {
                 Box(
                     modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                 ) {

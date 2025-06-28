@@ -13,7 +13,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ru.auskov.fbkotlin.utils.firebase.AuthManager
-import ru.auskov.fbkotlin.utils.firebase.FirestoreManager
 import ru.auskov.fbkotlin.utils.firebase.FirestoreManagerPaging
 import ru.auskov.fbkotlin.utils.store.StoreManager
 import javax.inject.Singleton
@@ -43,18 +42,10 @@ object MainModule {
     @Singleton
     fun provideFirebasePaging(
         db: FirebaseFirestore,
-        auth: FirebaseAuth
-    ): FirestoreManagerPaging {
-        return FirestoreManagerPaging(db, auth)
-    }
-
-    @Provides
-    @Singleton
-    fun provideFirebaseManager(
-        db: FirebaseFirestore,
+        auth: FirebaseAuth,
         storage: FirebaseStorage
-    ): FirestoreManager {
-        return FirestoreManager(db, storage)
+    ): FirestoreManagerPaging {
+        return FirestoreManagerPaging(db, auth, storage)
     }
 
     @Provides

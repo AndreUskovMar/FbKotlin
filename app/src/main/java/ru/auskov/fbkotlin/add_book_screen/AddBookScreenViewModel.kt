@@ -13,12 +13,12 @@ import ru.auskov.fbkotlin.add_book_screen.data.AddBookScreenObject
 import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.main.MainScreenViewModel.MainUIState
 import ru.auskov.fbkotlin.main.utils.Categories
-import ru.auskov.fbkotlin.utils.firebase.FirestoreManager
+import ru.auskov.fbkotlin.utils.firebase.FirestoreManagerPaging
 import javax.inject.Inject
 
 @HiltViewModel
 class AddBookScreenViewModel @Inject constructor(
-    private val firestoreManager: FirestoreManager
+    private val firestoreManager: FirestoreManagerPaging
 ) : ViewModel() {
     val title = mutableStateOf("")
     val description = mutableStateOf("")
