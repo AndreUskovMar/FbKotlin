@@ -15,6 +15,8 @@ import ru.auskov.fbkotlin.data.Favorite
 import ru.auskov.fbkotlin.main.utils.Categories
 import javax.inject.Singleton
 
+const val IS_BASE64 = false
+
 @Singleton
 class FirestoreManagerPaging(
     private val db: FirebaseFirestore,
@@ -34,6 +36,7 @@ class FirestoreManagerPaging(
             Categories.FAVORITES -> {
                 query.whereIn(FieldPath.documentId(), favKeysList)
             }
+
             else -> {
                 query.whereEqualTo("categoryIndex", categoryIndex)
             }
@@ -126,7 +129,7 @@ class FirestoreManagerPaging(
             }
     }
 
-    fun saveBookImage(
+    private fun uploadImageToStorage(
         prevImageUrl: String,
         uri: Uri?,
         book: Book,
@@ -170,6 +173,38 @@ class FirestoreManagerPaging(
                     }
                 )
             }
+        }
+    }
+
+    fun saveBookImage(
+        prevImageUrl: String,
+        uri: Uri?,
+        book: Book,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit,
+    ) {
+        if (IS_BASE64) {
+            saveBookToFireStore(
+                book,
+                onSuccess = {
+                    onSuccess()
+                },
+                onError = { message ->
+                    onError(message)
+                }
+            )
+        } else {
+            uploadImageToStorage(
+                prevImageUrl = prevImageUrl,
+                uri = uri,
+                book = book,
+                onSuccess = {
+                    onSuccess()
+                },
+                onError = { message ->
+                    onError(message)
+                }
+            )
         }
     }
 

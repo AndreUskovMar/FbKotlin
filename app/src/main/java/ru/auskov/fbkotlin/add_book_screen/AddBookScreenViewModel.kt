@@ -50,7 +50,8 @@ class AddBookScreenViewModel @Inject constructor(
             name = title.value,
             description = description.value,
             price = price.value,
-            categoryIndex = categoryIndex.intValue
+            categoryIndex = categoryIndex.intValue,
+            imageUrl = navData.imageUrl
         )
 
         sendUIState(MainUIState.Loading)

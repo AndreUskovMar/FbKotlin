@@ -1,8 +1,5 @@
 package ru.auskov.fbkotlin.main.components
 
-import android.graphics.BitmapFactory
-import android.util.Base64
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,10 +28,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.Bitmap
 import coil3.compose.AsyncImage
 import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.main.utils.Categories
+import ru.auskov.fbkotlin.utils.toBitmap
 
 @Preview(showBackground = true)
 @Composable
@@ -51,15 +48,6 @@ fun BookListItem(
     onFavoriteClick: () -> Unit = {},
     onBookClick: () -> Unit = {},
 ) {
-    var bitmap: Bitmap? = null
-
-    try {
-        val base64Image = Base64.decode(book.imageUrl, Base64.DEFAULT)
-        bitmap = BitmapFactory.decodeByteArray(base64Image, 0, base64Image.size)
-    } catch (e: IllegalArgumentException) {
-        Log.d("MyLog", e.message.toString())
-    }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -69,7 +57,7 @@ fun BookListItem(
             }
     ) {
         AsyncImage(
-            model = bitmap ?: book.imageUrl,
+            model = book.imageUrl.toBitmap() ?: book.imageUrl,
             contentDescription = "Bonevtik Potujniy",
             modifier = Modifier
                 .fillMaxWidth()

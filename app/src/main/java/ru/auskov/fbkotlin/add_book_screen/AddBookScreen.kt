@@ -1,8 +1,5 @@
 package ru.auskov.fbkotlin.add_book_screen
 
-//import android.content.ContentResolver
-//import android.graphics.BitmapFactory
-//import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -31,16 +28,17 @@ import ru.auskov.fbkotlin.components.RoundedButton
 import ru.auskov.fbkotlin.components.RoundedDropDownMenu
 import ru.auskov.fbkotlin.components.RoundedTextInput
 import ru.auskov.fbkotlin.ui.theme.Purple40
-//import android.util.Base64
 import android.widget.Toast
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import ru.auskov.fbkotlin.R
 import androidx.compose.ui.platform.LocalContext
-//import coil3.Bitmap
 import ru.auskov.fbkotlin.add_book_screen.data.AddBookScreenObject
 import ru.auskov.fbkotlin.main.MainScreenViewModel
+import ru.auskov.fbkotlin.utils.ImageUtils
+import ru.auskov.fbkotlin.utils.firebase.IS_BASE64
+import ru.auskov.fbkotlin.utils.toBitmap
 
 @Composable
 fun AddBookScreen(
@@ -49,48 +47,45 @@ fun AddBookScreen(
     viewModel: AddBookScreenViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    // val cr = context.contentResolver
 
     val navImageUrl = remember {
         mutableStateOf(navData.imageUrl)
+    }
+
+    val imageBase64 = remember {
+        mutableStateOf("")
     }
 
     val isShownIndicator = remember {
         mutableStateOf(false)
     }
 
-    //    val imageBitmap = remember {
-    //        var bitmap: Bitmap? = null
-    //
-    //        try {
-    //            val base64Image = Base64.decode(navData.imageUrl, Base64.DEFAULT)
-    //            bitmap = BitmapFactory.decodeByteArray(base64Image, 0, base64Image.size)
-    //        } catch (e: IllegalArgumentException) {
-    //            Log.d("MyLog", e.message.toString())
-    //        }
-    //
-    //        mutableStateOf(bitmap)
-    //    }
-
     val imageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-        // imageBitmap.value = null
-        navImageUrl.value = ""
-        viewModel.imageUri.value = uri
+        if (IS_BASE64) {
+            imageBase64.value = uri?.let {
+                ImageUtils.convertImageToBase64(it, context.contentResolver)
+            } ?: ""
+        } else {
+            navImageUrl.value = ""
+            viewModel.imageUri.value = uri
+        }
     }
 
     LaunchedEffect(Unit) {
         viewModel.setDefaultsData(navData)
 
         viewModel.uiState.collect { state ->
-            when(state) {
+            when (state) {
                 is MainScreenViewModel.MainUIState.Loading -> {
                     isShownIndicator.value = true
                 }
+
                 is MainScreenViewModel.MainUIState.Success -> {
                     isShownIndicator.value = false
                 }
+
                 is MainScreenViewModel.MainUIState.Error -> {
                     isShownIndicator.value = false
                     Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
@@ -101,8 +96,11 @@ fun AddBookScreen(
 
     Image(
         painter = rememberAsyncImagePainter(
-            // model = imageBitmap.value ?: imageUri.value
-            model = navImageUrl.value.ifEmpty { viewModel.imageUri.value }
+            model = if (imageBase64.value.isEmpty()) {
+                navImageUrl.value.ifEmpty { viewModel.imageUri.value }
+            } else {
+                imageBase64.value.toBitmap()
+            }
         ),
         contentDescription = "Add Book",
         modifier = Modifier.fillMaxSize(),
@@ -187,15 +185,9 @@ fun AddBookScreen(
                 name = stringResource(R.string.save_book),
                 isLoadingIndicator = isShownIndicator.value
             ) {
-                viewModel.uploadBook(navData) {
+                viewModel.uploadBook(navData.copy(imageUrl = imageBase64.value)) {
                     onSavedSuccess()
                 }
-
-                // val imageBase64 = if (imageUri.value != null ) convertImageToBase64(
-                //     imageUri.value as Uri,
-                //     cr
-                // ) else navData.imageUrl
-
             }
         }
     }
