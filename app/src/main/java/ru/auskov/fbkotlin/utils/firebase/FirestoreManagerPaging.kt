@@ -1,5 +1,6 @@
 package ru.auskov.fbkotlin.utils.firebase
 
+import android.content.ContentResolver
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
@@ -13,15 +14,17 @@ import kotlinx.coroutines.tasks.await
 import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.data.Favorite
 import ru.auskov.fbkotlin.main.utils.Categories
+import ru.auskov.fbkotlin.utils.ImageUtils
 import javax.inject.Singleton
 
-const val IS_BASE64 = false
+const val IS_BASE64 = true
 
 @Singleton
 class FirestoreManagerPaging(
     private val db: FirebaseFirestore,
     private val auth: FirebaseAuth,
-    private val storage: FirebaseStorage
+    private val storage: FirebaseStorage,
+    private val contentResolver: ContentResolver
 ) {
     var categoryIndex = Categories.FANTASY
 
@@ -159,7 +162,12 @@ class FirestoreManagerPaging(
             return
         }
 
-        val uploadTask = storageRef.putFile(uri)
+        // with optimization
+        val imageBytes = ImageUtils.convertUriToBytesArray(uri, contentResolver )
+        val uploadTask = storageRef.putBytes(imageBytes)
+
+        // without optimization
+        // val uploadTask = storageRef.putFile(uri)
 
         uploadTask.addOnCompleteListener {
             storageRef.downloadUrl.addOnSuccessListener { url ->
