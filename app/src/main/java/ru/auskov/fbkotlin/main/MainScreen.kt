@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +30,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.firebase.auth.ktx.auth
@@ -64,6 +68,20 @@ fun MainScreen(
 
     val isAdminState = remember {
         mutableStateOf(false)
+    }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                books.refresh()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -117,7 +135,10 @@ fun MainScreen(
         },
     ) {
         Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-            MainTopBar(viewModel.selectedCategoryState.intValue)
+            MainTopBar(viewModel.selectedCategoryState.intValue, onSearch = { text ->
+                viewModel.searchBooksByText(text)
+                books.refresh()
+            })
         }, bottomBar = {
             BottomMenu(selectedItem = viewModel.selectedItemState.intValue, onHomeClick = {
                 viewModel.selectedItemState.intValue = BottomMenuItem.Home.titleId

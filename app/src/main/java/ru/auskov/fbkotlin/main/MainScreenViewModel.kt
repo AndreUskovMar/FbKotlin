@@ -65,6 +65,10 @@ class MainScreenViewModel @Inject constructor(
         _uiState.emit(state)
     }
 
+    fun searchBooksByText(text: String) {
+        firestoreManager.searchText = text
+    }
+
     fun getBooksByCategory(categoryIndex: Int) {
         selectedCategoryState.intValue = categoryIndex
         firestoreManager.categoryIndex = categoryIndex

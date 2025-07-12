@@ -2,6 +2,7 @@ package ru.auskov.fbkotlin.utils.firebase
 
 import android.content.ContentResolver
 import android.net.Uri
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
@@ -27,6 +28,7 @@ class FirestoreManagerPaging(
     private val contentResolver: ContentResolver
 ) {
     var categoryIndex = Categories.FANTASY
+    var searchText = ""
 
     suspend fun nextPage(
         pageSize: Long,
@@ -37,12 +39,20 @@ class FirestoreManagerPaging(
 
         query = when (categoryIndex) {
             Categories.FAVORITES -> {
-                query.whereIn(FieldPath.documentId(), favKeysList)
+                // query.whereIn(FieldPath.documentId(), favKeysList)
+                query.whereIn(FieldPath.of("key"), favKeysList)
             }
 
             else -> {
                 query.whereEqualTo("categoryIndex", categoryIndex)
             }
+        }
+
+        if (searchText.isNotEmpty()) {
+            Log.d("MyLog", searchText)
+            query = query
+                .whereGreaterThanOrEqualTo("searchName", searchText.lowercase())
+                .whereLessThan("searchName", "${searchText.lowercase()}\uF7FF")
         }
 
         if (currentKey != null) {
@@ -163,7 +173,7 @@ class FirestoreManagerPaging(
         }
 
         // with optimization
-        val imageBytes = ImageUtils.convertUriToBytesArray(uri, contentResolver )
+        val imageBytes = ImageUtils.convertUriToBytesArray(uri, contentResolver)
         val uploadTask = storageRef.putBytes(imageBytes)
 
         // without optimization

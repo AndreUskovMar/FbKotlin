@@ -5,6 +5,7 @@ import ru.auskov.fbkotlin.main.utils.Categories
 data class Book(
     val key: String = "",
     val name: String = "",
+    val searchName: String = name.lowercase(),
     val description: String = "",
     val categoryIndex: Int = Categories.FANTASY,
     val price: String = "",

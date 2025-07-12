@@ -34,7 +34,8 @@ import ru.auskov.fbkotlin.ui.theme.Purple40
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainTopBar(
-    titleId: Int
+    titleId: Int,
+    onSearch: (String) -> Unit
 ) {
     var targetState by remember {
         mutableStateOf(false)
@@ -61,12 +62,12 @@ fun MainTopBar(
                         onQueryChange = { text ->
                             inputText = text
                         },
-                        onSearch = {
-
+                        onSearch = { text ->
+                            onSearch(text)
                         },
                         expanded = expandedState,
                         onExpandedChange = {
-                            expandedState = it
+                            // expandedState = it
                         },
                         trailingIcon = {
                             IconButton(
@@ -74,6 +75,7 @@ fun MainTopBar(
                                     expandedState = false
                                     targetState = false
                                     inputText = ""
+                                    onSearch("")
                                 }
                             ) {
                                 Icon(Icons.Default.Close, contentDescription = "Close")
