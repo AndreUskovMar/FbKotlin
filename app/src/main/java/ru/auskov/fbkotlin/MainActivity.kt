@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
                                     DetailsScreenObject(
                                         title = book.name,
                                         description = book.description,
-                                        price = book.price,
+                                        price = book.price.toString(),
                                         imageUrl = book.imageUrl
                                     )
                                 )
@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
                                         name = book.name,
                                         description = book.description,
                                         categoryIndex = book.categoryIndex,
-                                        price = book.price,
+                                        price = book.price.toString(),
                                         imageUrl = book.imageUrl,
                                     )
                                 )

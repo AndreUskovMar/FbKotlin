@@ -41,7 +41,7 @@ fun BookListItem(
         name = "Title",
         description = "Description",
         categoryIndex = Categories.FANTASY,
-        price = "100$"
+        price = 100
     ),
     onEditBook: (Book) -> Unit = {},
     onDeleteBook: (Book) -> Unit = {},
@@ -92,7 +92,7 @@ fun BookListItem(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = book.price,
+                text = book.price.toString(),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Blue,

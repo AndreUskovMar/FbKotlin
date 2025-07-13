@@ -53,7 +53,7 @@ fun AddBookScreen(
     }
 
     val imageBase64 = remember {
-        mutableStateOf("")
+        mutableStateOf(if (IS_BASE64) navData.imageUrl else "")
     }
 
     val isShownIndicator = remember {

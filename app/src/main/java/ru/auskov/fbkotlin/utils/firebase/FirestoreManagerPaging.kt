@@ -29,12 +29,16 @@ class FirestoreManagerPaging(
 ) {
     var categoryIndex = Categories.FANTASY
     var searchText = ""
+    var minPrice = 0
+    var maxPrice = 0
+
+    var isPriceFilterType = false
 
     suspend fun nextPage(
         pageSize: Long,
         currentKey: DocumentSnapshot?
     ): Pair<QuerySnapshot, List<Book>> {
-        var query: Query = db.collection("books").limit(pageSize)
+        var query: Query = db.collection("books").limit(pageSize).orderBy("name")
         val favKeysList = getFavoriteIdsList()
 
         query = when (categoryIndex) {
@@ -53,6 +57,11 @@ class FirestoreManagerPaging(
             query = query
                 .whereGreaterThanOrEqualTo("searchName", searchText.lowercase())
                 .whereLessThan("searchName", "${searchText.lowercase()}\uF7FF")
+        }
+
+        if (isPriceFilterType) {
+            query = query.whereGreaterThanOrEqualTo("price", minPrice)
+                .whereLessThanOrEqualTo("price", maxPrice)
         }
 
         if (currentKey != null) {

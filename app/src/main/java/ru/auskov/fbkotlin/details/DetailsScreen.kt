@@ -73,7 +73,7 @@ fun DetailsScreen(
                     )
 
                     Text(
-                        text = stringResource(R.string.creaing_year),
+                        text = stringResource(R.string.creating_year),
                         color = Color.Gray
                     )
                     Text(
@@ -106,7 +106,7 @@ fun DetailsScreen(
         }
 
         RoundedButton(
-            name = "${stringResource(R.string.creaing_year)} ${navData.price}"
+            name = "${stringResource(R.string.creating_year)} ${navData.price}"
         ) { }
     }
 }

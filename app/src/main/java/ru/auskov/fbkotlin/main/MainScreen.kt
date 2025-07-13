@@ -20,9 +20,11 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,6 +42,7 @@ import com.google.firebase.firestore.ktx.firestore
 import kotlinx.coroutines.launch
 import ru.auskov.fbkotlin.R
 import ru.auskov.fbkotlin.components.CustomAlertDialog
+import ru.auskov.fbkotlin.components.CustomFilterDialog
 import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.login.data.MainScreenDataObject
 import ru.auskov.fbkotlin.main.components.BookListItem
@@ -67,6 +70,10 @@ fun MainScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val isAdminState = remember {
+        mutableStateOf(false)
+    }
+
+    var isShownFilterDialog by remember {
         mutableStateOf(false)
     }
 
@@ -138,6 +145,8 @@ fun MainScreen(
             MainTopBar(viewModel.selectedCategoryState.intValue, onSearch = { text ->
                 viewModel.searchBooksByText(text)
                 books.refresh()
+            }, onFilter = {
+                isShownFilterDialog = true
             })
         }, bottomBar = {
             BottomMenu(selectedItem = viewModel.selectedItemState.intValue, onHomeClick = {
@@ -201,6 +210,19 @@ fun MainScreen(
                     }
                 }
             }
+
+            CustomFilterDialog(
+                isShownDialog = isShownFilterDialog,
+                title = stringResource(R.string.order_by),
+                onConfirm = {
+                    viewModel.onSavePriceRange()
+                    isShownFilterDialog = false
+                    books.refresh()
+                },
+                onDismiss = {
+                    isShownFilterDialog = false
+                },
+            )
         }
     }
 }

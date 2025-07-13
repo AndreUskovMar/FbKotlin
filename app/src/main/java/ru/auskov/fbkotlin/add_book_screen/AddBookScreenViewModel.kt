@@ -49,7 +49,7 @@ class AddBookScreenViewModel @Inject constructor(
             key = navData.key,
             name = title.value,
             description = description.value,
-            price = price.value,
+            price = price.value.toInt(),
             categoryIndex = categoryIndex.intValue,
             imageUrl = navData.imageUrl
         )

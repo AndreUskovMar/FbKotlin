@@ -27,9 +27,16 @@
     <string name="start">Старт …?</string>
     <string name="admin_panel">Админ Панель</string>
 
+    <string name="order_by">Упорядочить по</string>
+    <string name="price_range">Диапозон цен</string>
+    <string name="from">От</string>
+    <string name="to">До</string>
+    <string name="min">Мин</string>
+    <string name="max">Макс</string>
+
     <!-- Details screen -->
     <string name="creator">Писатель</string>
-    <string name="creaing_year">Год издания</string>
+    <string name="creating_year">Год издания</string>
     <string name="buy_the">Купить за</string>
 
     <!-- Add book screen -->

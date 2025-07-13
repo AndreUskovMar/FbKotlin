@@ -5,4 +5,8 @@
         <item>Drama</item>
         <item>Bestsellers</item>
     </string-array>
+    <string-array name="order_by">
+        <item>Name</item>
+        <item>Price</item>
+    </string-array>
 </resources>

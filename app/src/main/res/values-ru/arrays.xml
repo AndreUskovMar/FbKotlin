@@ -5,4 +5,8 @@
         <item>Драма</item>
         <item>Бестселлеры</item>
     </string-array>
+    <string-array name="order_by">
+        <item>Название</item>
+        <item>Цена</item>
+    </string-array>
 </resources>

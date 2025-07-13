@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,7 +36,8 @@ import ru.auskov.fbkotlin.ui.theme.Purple40
 @Composable
 fun MainTopBar(
     titleId: Int,
-    onSearch: (String) -> Unit
+    onSearch: (String) -> Unit,
+    onFilter: () -> Unit,
 ) {
     var targetState by remember {
         mutableStateOf(false)
@@ -121,6 +123,13 @@ fun MainTopBar(
                         }
                     ) {
                         Icon(Icons.Default.Search, contentDescription = "Search")
+                    }
+                    IconButton(
+                        onClick = {
+                            onFilter()
+                        }
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Filter")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

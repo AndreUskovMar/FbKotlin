@@ -1,5 +1,6 @@
 package ru.auskov.fbkotlin.main
 
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -27,6 +28,12 @@ class MainScreenViewModel @Inject constructor(
     pager: Flow<PagingData<Book>>
 ) : ViewModel() {
 //    val isEmptyListState = mutableStateOf(false)
+
+    val minPrice = mutableFloatStateOf(0f)
+    val maxPrice = mutableFloatStateOf(0f)
+
+    val isFilterByPrice = mutableStateOf(false)
+
     val selectedItemState = mutableIntStateOf(BottomMenuItem.Home.titleId)
     val selectedCategoryState = mutableIntStateOf(Categories.FANTASY)
     val isShowDeleteAlertDialog = mutableStateOf(false)
@@ -72,6 +79,15 @@ class MainScreenViewModel @Inject constructor(
     fun getBooksByCategory(categoryIndex: Int) {
         selectedCategoryState.intValue = categoryIndex
         firestoreManager.categoryIndex = categoryIndex
+    }
+
+    fun onSavePriceRange() {
+        firestoreManager.minPrice = minPrice.floatValue.toInt()
+        firestoreManager.maxPrice = maxPrice.floatValue.toInt()
+    }
+
+    fun setIsPriceFilterType(isPriceType: Boolean) {
+        firestoreManager.isPriceFilterType = isPriceType
     }
 
     fun onFavoriteClick(book: Book, bookList: List<Book>) {
