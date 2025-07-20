@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-// import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
@@ -215,7 +214,7 @@ fun MainScreen(
                 isShownDialog = isShownFilterDialog,
                 title = stringResource(R.string.order_by),
                 onConfirm = {
-                    viewModel.onSavePriceRange()
+                    viewModel.setFilter()
                     isShownFilterDialog = false
                     books.refresh()
                 },

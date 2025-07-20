@@ -20,6 +20,8 @@ import kotlinx.coroutines.launch
 import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.main.components.BottomMenuItem
 import ru.auskov.fbkotlin.main.utils.Categories
+import ru.auskov.fbkotlin.utils.firebase.FilterData
+import ru.auskov.fbkotlin.utils.firebase.FirebaseConstants
 import ru.auskov.fbkotlin.utils.firebase.FirestoreManagerPaging
 
 @HiltViewModel
@@ -81,13 +83,14 @@ class MainScreenViewModel @Inject constructor(
         firestoreManager.categoryIndex = categoryIndex
     }
 
-    fun onSavePriceRange() {
-        firestoreManager.minPrice = minPrice.floatValue.toInt()
-        firestoreManager.maxPrice = maxPrice.floatValue.toInt()
-    }
+    fun setFilter() {
+        val filterData = FilterData(
+            minPrice = minPrice.floatValue.toInt(),
+            maxPrice = maxPrice.floatValue.toInt(),
+            filterType = if (isFilterByPrice.value) FirebaseConstants.PRICE else FirebaseConstants.NAME
+        )
 
-    fun setIsPriceFilterType(isPriceType: Boolean) {
-        firestoreManager.isPriceFilterType = isPriceType
+        firestoreManager.filterData = filterData
     }
 
     fun onFavoriteClick(book: Book, bookList: List<Book>) {

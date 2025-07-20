@@ -29,39 +29,37 @@ class FirestoreManagerPaging(
 ) {
     var categoryIndex = Categories.FANTASY
     var searchText = ""
-    var minPrice = 0
-    var maxPrice = 0
-
-    var isPriceFilterType = false
+    var filterData = FilterData()
 
     suspend fun nextPage(
-        pageSize: Long,
-        currentKey: DocumentSnapshot?
+        pageSize: Long, currentKey: DocumentSnapshot?
     ): Pair<QuerySnapshot, List<Book>> {
-        var query: Query = db.collection("books").limit(pageSize).orderBy("name")
+        var query: Query = db.collection(FirebaseConstants.BOOKS).limit(pageSize).orderBy(
+            filterData.filterType
+        )
         val favKeysList = getFavoriteIdsList()
 
         query = when (categoryIndex) {
             Categories.FAVORITES -> {
                 // query.whereIn(FieldPath.documentId(), favKeysList)
-                query.whereIn(FieldPath.of("key"), favKeysList)
+                query.whereIn(FieldPath.of(FirebaseConstants.KEY), favKeysList)
             }
 
             else -> {
-                query.whereEqualTo("categoryIndex", categoryIndex)
+                query.whereEqualTo(FirebaseConstants.CATEGORY_INDEX, categoryIndex)
             }
         }
 
         if (searchText.isNotEmpty()) {
             Log.d("MyLog", searchText)
             query = query
-                .whereGreaterThanOrEqualTo("searchName", searchText.lowercase())
-                .whereLessThan("searchName", "${searchText.lowercase()}\uF7FF")
+                .whereGreaterThanOrEqualTo(FirebaseConstants.SEARCH_NAME, searchText.lowercase()
+                ).whereLessThan(FirebaseConstants.SEARCH_NAME, "${searchText.lowercase()}\uF7FF")
         }
 
-        if (isPriceFilterType) {
-            query = query.whereGreaterThanOrEqualTo("price", minPrice)
-                .whereLessThanOrEqualTo("price", maxPrice)
+        if (filterData.filterType == FirebaseConstants.PRICE && filterData.minPrice != 0 && filterData.maxPrice != 0) {
+            query = query.whereGreaterThanOrEqualTo(FirebaseConstants.PRICE, filterData.minPrice)
+                .whereLessThanOrEqualTo(FirebaseConstants.PRICE, filterData.maxPrice)
         }
 
         if (currentKey != null) {
@@ -96,9 +94,9 @@ class FirestoreManagerPaging(
     }
 
     private fun getFavoritesCategoryReference(): CollectionReference {
-        return db.collection("users")
+        return db.collection(FirebaseConstants.USERS)
             .document(auth.uid ?: "")
-            .collection("favorites")
+            .collection(FirebaseConstants.FAVORITES)
     }
 
     private fun addToFavorites(
@@ -134,7 +132,7 @@ class FirestoreManagerPaging(
         onSuccess: () -> Unit,
         onError: (String) -> Unit,
     ) {
-        val db = db.collection("books")
+        val db = db.collection(FirebaseConstants.BOOKS)
         val key = book.key.ifEmpty {
             db.document().id
         }
@@ -161,7 +159,7 @@ class FirestoreManagerPaging(
         val timestamp = System.currentTimeMillis()
         val storageRef = if (prevImageUrl.isEmpty()) {
             storage.reference
-                .child("book_images")
+                .child(FirebaseConstants.BOOK_IMAGES)
                 .child("image_$timestamp.png")
         } else {
             storage.getReferenceFromUrl(prevImageUrl)
@@ -240,7 +238,7 @@ class FirestoreManagerPaging(
         onSuccess: () -> Unit,
         onFailure: (message: String) -> Unit
     ) {
-        db.collection("books")
+        db.collection(FirebaseConstants.BOOKS)
             .document(book.key)
             .delete()
             .addOnSuccessListener {

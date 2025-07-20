@@ -77,7 +77,6 @@ fun CustomFilterDialog(
                         options = orderByList
                     ) { option ->
                         viewModel.isFilterByPrice.value = option == orderByList[1]
-                        viewModel.setIsPriceFilterType(viewModel.isFilterByPrice.value)
                     }
 
                     if (viewModel.isFilterByPrice.value) {
