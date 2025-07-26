@@ -12,9 +12,12 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -52,6 +55,7 @@ import ru.auskov.fbkotlin.main.components.DrawerList
 import ru.auskov.fbkotlin.main.components.MainTopBar
 import ru.auskov.fbkotlin.main.utils.Categories
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     viewModel: MainScreenViewModel = hiltViewModel(),
@@ -75,6 +79,8 @@ fun MainScreen(
     var isShownFilterDialog by remember {
         mutableStateOf(false)
     }
+
+    val state = rememberPullToRefreshState()
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -179,33 +185,43 @@ fun MainScreen(
                     viewModel.bookToDelete = null
                 })
 
-            if (books.loadState.refresh is LoadState.Loading) {
-                Box(
-                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(70.dp), color = Color.Green
-                    )
+            PullToRefreshBox(
+                isRefreshing = books.loadState.refresh is LoadState.Loading,
+                onRefresh = {
+                    books.refresh()
+                },
+                modifier = Modifier.padding(paddingValue),
+                state = state,
+                indicator = {
+                    if (books.loadState.refresh is LoadState.Loading) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(70.dp), color = Color.Green
+                            )
+                        }
+                    }
                 }
-            }
-
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2), modifier = Modifier.padding(paddingValue)
             ) {
-                items(books.itemCount) { bookIndex ->
-                    val book = books[bookIndex]
-                    book?.let {
-                        BookListItem(isAdminState.value, it, onEditBook = {
-                            onBookEditClick(book)
-                            //viewModel.booksList.value = emptyList()
-                        }, onDeleteBook = {
-                            viewModel.isShowDeleteAlertDialog.value = true
-                            viewModel.bookToDelete = book
-                        }, onFavoriteClick = {
-                            viewModel.onFavoriteClick(book, books.itemSnapshotList.items)
-                        }, onBookClick = {
-                            onBookClick(book)
-                        })
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2)
+                ) {
+                    items(books.itemCount) { bookIndex ->
+                        val book = books[bookIndex]
+                        book?.let {
+                            BookListItem(isAdminState.value, it, onEditBook = {
+                                onBookEditClick(book)
+                                //viewModel.booksList.value = emptyList()
+                            }, onDeleteBook = {
+                                viewModel.isShowDeleteAlertDialog.value = true
+                                viewModel.bookToDelete = book
+                            }, onFavoriteClick = {
+                                viewModel.onFavoriteClick(book, books.itemSnapshotList.items)
+                            }, onBookClick = {
+                                onBookClick(book)
+                            })
+                        }
                     }
                 }
             }
