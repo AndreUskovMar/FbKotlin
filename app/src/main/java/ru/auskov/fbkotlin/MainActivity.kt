@@ -12,6 +12,7 @@ import androidx.navigation.toRoute
 import dagger.hilt.android.AndroidEntryPoint
 import ru.auskov.fbkotlin.add_book_screen.AddBookScreen
 import ru.auskov.fbkotlin.add_book_screen.data.AddBookScreenObject
+import ru.auskov.fbkotlin.ads.YandexAdsManager
 import ru.auskov.fbkotlin.details.DetailsScreen
 import ru.auskov.fbkotlin.details.data.DetailsScreenObject
 import ru.auskov.fbkotlin.login.LoginScreen
@@ -19,9 +20,13 @@ import ru.auskov.fbkotlin.login.data.LoginScreenObject
 import ru.auskov.fbkotlin.login.data.MainScreenDataObject
 import ru.auskov.fbkotlin.main.MainScreen
 import ru.auskov.fbkotlin.ui.theme.FbKotlinTheme
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var yandexAdsManager: YandexAdsManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -41,14 +46,16 @@ class MainActivity : ComponentActivity() {
                         MainScreen(
                             navData = navData,
                             onBookClick = { book ->
-                                navController.navigate(
-                                    DetailsScreenObject(
-                                        title = book.name,
-                                        description = book.description,
-                                        price = book.price.toString(),
-                                        imageUrl = book.imageUrl
+                                yandexAdsManager.showAd(context = this@MainActivity) {
+                                    navController.navigate(
+                                        DetailsScreenObject(
+                                            title = book.name,
+                                            description = book.description,
+                                            price = book.price.toString(),
+                                            imageUrl = book.imageUrl
+                                        )
                                     )
-                                )
+                                }
                             },
                             onBookEditClick = { book ->
                                 navController.navigate(

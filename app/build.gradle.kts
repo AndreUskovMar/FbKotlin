@@ -60,6 +60,8 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.firebase.auth)
 
+    implementation(libs.yandex.mobileads)
+
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 

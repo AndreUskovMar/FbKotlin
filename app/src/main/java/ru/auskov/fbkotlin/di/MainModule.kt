@@ -12,6 +12,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import ru.auskov.fbkotlin.ads.YandexAdsManager
 import ru.auskov.fbkotlin.utils.firebase.AuthManager
 import ru.auskov.fbkotlin.utils.firebase.FirestoreManagerPaging
 import ru.auskov.fbkotlin.utils.store.StoreManager
@@ -20,6 +21,14 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object MainModule {
+    @Provides
+    @Singleton
+    fun provideYandexManager(
+        app: Application
+    ): YandexAdsManager {
+        return YandexAdsManager(app)
+    }
+
     @Provides
     @Singleton
     fun provideFirebaseAuth(): FirebaseAuth {
