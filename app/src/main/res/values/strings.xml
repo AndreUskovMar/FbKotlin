@@ -12,6 +12,7 @@
     <string name="logout">Logout</string>
     <string name="password">Password</string>
     <string name="email">Email</string>
+    <string name="submit">Submit</string>
 
     <!-- Bottom navigation -->
     <string name="home">Home</string>
@@ -37,6 +38,7 @@
     <string name="creator">Creator</string>
     <string name="creating_year">Creating year</string>
     <string name="buy_the">Buy the</string>
+    <string name="rate_book">Buy this book</string>
 
     <!-- Add book screen -->
     <string name="save_book">Save New Book</string>

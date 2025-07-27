@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import coil3.Bitmap
 import coil3.compose.AsyncImage
 import ru.auskov.fbkotlin.R
+import ru.auskov.fbkotlin.components.CustomRatingDialog
 import ru.auskov.fbkotlin.components.RoundedButton
 import ru.auskov.fbkotlin.details.data.DetailsScreenObject
 
@@ -104,6 +105,8 @@ fun DetailsScreen(
                 fontSize = 15.sp,
             )
         }
+
+        CustomRatingDialog()
 
         RoundedButton(
             name = "${stringResource(R.string.creating_year)} ${navData.price}"
