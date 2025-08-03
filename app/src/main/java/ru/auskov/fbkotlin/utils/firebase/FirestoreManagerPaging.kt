@@ -248,4 +248,30 @@ class FirestoreManagerPaging(
                 onFailure(error.message ?: "Error")
             }
     }
+
+    fun insertRating(bookId: String, rating: Int) {
+        if (auth.uid == null) return
+
+        db.collection(FirebaseConstants.BOOK_RATING)
+            .document(bookId)
+            .collection(FirebaseConstants.RATING)
+            .document(auth.uid!!)
+            .set(mapOf("rating" to rating))
+    }
+
+    suspend fun getRating(bookId: String): Double {
+        val querySnapshot = db.collection(FirebaseConstants.BOOK_RATING)
+            .document(bookId)
+            .collection(FirebaseConstants.RATING)
+            .get()
+            .await()
+
+        val ratings = querySnapshot.documents.mapNotNull { document -> document.getLong("rating")?.toInt() }
+
+        return (if (ratings.isNotEmpty()) {
+            ratings.average()
+        } else {
+            0.0
+        })
+    }
 }

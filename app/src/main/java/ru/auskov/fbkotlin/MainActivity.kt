@@ -49,6 +49,7 @@ class MainActivity : ComponentActivity() {
                                 yandexAdsManager.showAd(context = this@MainActivity) {
                                     navController.navigate(
                                         DetailsScreenObject(
+                                            id = book.key,
                                             title = book.name,
                                             description = book.description,
                                             price = book.price.toString(),

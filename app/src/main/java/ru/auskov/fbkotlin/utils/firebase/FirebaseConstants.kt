@@ -10,4 +10,6 @@ object FirebaseConstants {
     const val USERS = "users"
     const val FAVORITES = "favorites"
     const val BOOK_IMAGES = "book_images"
+    const val BOOK_RATING = "book_rating"
+    const val RATING = "rating"
 }

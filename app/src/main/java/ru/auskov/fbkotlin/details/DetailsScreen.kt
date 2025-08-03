@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.Bitmap
 import coil3.compose.AsyncImage
 import ru.auskov.fbkotlin.R
@@ -44,7 +46,8 @@ import ru.auskov.fbkotlin.details.data.DetailsScreenObject
 
 @Composable
 fun DetailsScreen(
-    navData: DetailsScreenObject = DetailsScreenObject()
+    navData: DetailsScreenObject = DetailsScreenObject(),
+    viewModel: DetailsScreenViewModel = hiltViewModel()
 ) {
     var bitmap: Bitmap? = null
     var isVisibleRateDialog by remember {
@@ -56,6 +59,10 @@ fun DetailsScreen(
         bitmap = BitmapFactory.decodeByteArray(base64Image, 0, base64Image.size)
     } catch (e: IllegalArgumentException) {
         Log.d("MyLog", e.message.toString())
+    }
+
+    LaunchedEffect(key1 = Unit){
+        viewModel.getBookRating(navData.id)
     }
 
     Column(
@@ -107,7 +114,7 @@ fun DetailsScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "4.8",
+                            text = viewModel.bookRating.value,
                             fontWeight = FontWeight.Bold
                         )
                         Icon(
@@ -164,8 +171,9 @@ fun DetailsScreen(
 
         CustomRatingDialog(
             isVisible = isVisibleRateDialog,
-            onSubmit = {
+            onSubmit = { rating ->
                 isVisibleRateDialog = false
+                viewModel.insertBookRating(bookId = navData.id, bookRating = rating)
             },
             onDismiss = {
                 isVisibleRateDialog = false
