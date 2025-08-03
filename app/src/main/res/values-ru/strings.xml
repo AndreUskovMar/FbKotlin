@@ -39,7 +39,9 @@
     <string name="creator">Писатель</string>
     <string name="creating_year">Год издания</string>
     <string name="buy_the">Купить за</string>
+    <string name="buy_now">Купить сейчас</string>
     <string name="rate_book">Оцените эту книгу</string>
+    <string name="rating">Оценка</string>
 
     <!-- Add book screen -->
     <string name="save_book">Сохранить новую книгу</string>

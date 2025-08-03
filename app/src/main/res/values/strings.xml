@@ -38,7 +38,9 @@
     <string name="creator">Creator</string>
     <string name="creating_year">Creating year</string>
     <string name="buy_the">Buy the</string>
-    <string name="rate_book">Buy this book</string>
+    <string name="buy_now">Buy now</string>
+    <string name="rate_book">Rate this book</string>
+    <string name="rating">Rating</string>
 
     <!-- Add book screen -->
     <string name="save_book">Save New Book</string>

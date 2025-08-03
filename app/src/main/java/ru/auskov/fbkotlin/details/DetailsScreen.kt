@@ -12,10 +12,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -34,6 +47,9 @@ fun DetailsScreen(
     navData: DetailsScreenObject = DetailsScreenObject()
 ) {
     var bitmap: Bitmap? = null
+    var isVisibleRateDialog by remember {
+        mutableStateOf(false)
+    }
 
     try {
         val base64Image = Base64.decode(navData.imageUrl, Base64.DEFAULT)
@@ -55,6 +71,7 @@ fun DetailsScreen(
                     contentDescription = navData.title,
                     modifier = Modifier.fillMaxWidth(0.5f)
                         .height(200.dp)
+                        .clip(RoundedCornerShape(20.dp))
                         .background(Color.LightGray),
                     contentScale = ContentScale.FillHeight
                 )
@@ -72,7 +89,7 @@ fun DetailsScreen(
                         text = "Украинский народ",
                         fontWeight = FontWeight.Bold
                     )
-
+                    Spacer(modifier = Modifier.height(10.dp))
                     Text(
                         text = stringResource(R.string.creating_year),
                         color = Color.Gray
@@ -81,6 +98,41 @@ fun DetailsScreen(
                         text = "2019",
                         fontWeight = FontWeight.Bold
                     )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = stringResource(R.string.rating),
+                        color = Color.Gray
+                    )
+                    Row (
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "4.8",
+                            fontWeight = FontWeight.Bold
+                        )
+                        Icon(
+                            Icons.Default.Star,
+                            modifier = Modifier.size(20.dp),
+                            contentDescription = "Star",
+                            tint = Color.Yellow
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Row {
+                RoundedButton(
+                    name = stringResource(R.string.buy_now),
+                    modifier = Modifier.fillMaxWidth().weight(1f)
+                ) { }
+                Spacer(modifier = Modifier.width(20.dp))
+                RoundedButton(
+                    name = stringResource(R.string.rate_book),
+                    modifier = Modifier.fillMaxWidth().weight(1f)
+                ) {
+                    isVisibleRateDialog = true
                 }
             }
 
@@ -99,17 +151,25 @@ fun DetailsScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Text(
-                text = navData.description,
-                fontWeight = FontWeight.Bold,
-                fontSize = 15.sp,
-            )
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            ) {
+                Text(
+                    text = navData.description,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
+                )
+            }
         }
 
-        CustomRatingDialog()
-
-        RoundedButton(
-            name = "${stringResource(R.string.creating_year)} ${navData.price}"
-        ) { }
+        CustomRatingDialog(
+            isVisible = isVisibleRateDialog,
+            onSubmit = {
+                isVisibleRateDialog = false
+            },
+            onDismiss = {
+                isVisibleRateDialog = false
+            }
+        )
     }
 }

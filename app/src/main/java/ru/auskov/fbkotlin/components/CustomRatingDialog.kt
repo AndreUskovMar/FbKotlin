@@ -30,52 +30,56 @@ import ru.auskov.fbkotlin.R
 
 @Composable
 fun CustomRatingDialog(
-    onConfirm: () -> Unit = {}
+    onSubmit: (Int) -> Unit = {},
+    onDismiss: () -> Unit,
+    isVisible: Boolean = false
 ) {
     var selectedRating by remember { mutableIntStateOf(0) }
 
-    AlertDialog(
-        onDismissRequest = { selectedRating = 0 },
-        title = {
-            Text(
-                text = stringResource(R.string.rate_book),
-                color = Color.White,
-                fontSize = 25.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-        },
-        text = {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                for (rating in 1..5) {
-                    Box(
-                        modifier = Modifier.size(40.dp).clickable{
-                            selectedRating = rating
+    if (isVisible) {
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
+            title = {
+                Text(
+                    text = stringResource(R.string.rate_book),
+                    color = Color.White,
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            },
+            text = {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    for (rating in 1..5) {
+                        Box(
+                            modifier = Modifier.size(40.dp).clickable {
+                                selectedRating = rating
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Star,
+                                modifier = Modifier.size(40.dp),
+                                contentDescription = "Star",
+                                tint = if (rating <= selectedRating) Color.Yellow else Color.Gray
+                            )
                         }
-                    ) {
-                        Icon(
-                            Icons.Default.Star,
-                            modifier = Modifier.size(40.dp),
-                            contentDescription = "Star",
-                            tint = if (rating <= selectedRating) Color.Yellow else Color.Gray
-                        )
                     }
                 }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    onSubmit(selectedRating)
+                }, colors = ButtonDefaults.buttonColors(Color.White)) {
+                    Text(
+                        text = stringResource(R.string.submit),
+                        color = Color.Blue,
+                        fontSize = 16.sp
+                    )
+                }
             }
-        },
-        confirmButton = {
-            Button(onClick = {
-                onConfirm()
-            }, colors = ButtonDefaults.buttonColors(Color.White)) {
-                Text(
-                    text = stringResource(R.string.submit),
-                    color = Color.Blue,
-                    fontSize = 16.sp
-                )
-            }
-        }
-    )
+        )
+    }
 }

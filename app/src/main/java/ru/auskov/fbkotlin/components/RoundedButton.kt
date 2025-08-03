@@ -15,14 +15,15 @@ import ru.auskov.fbkotlin.ui.theme.LightGreen
 @Composable
 fun RoundedButton(
     name: String,
+    modifier: Modifier = Modifier,
     isLoadingIndicator: Boolean = false,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Button(
         onClick = {
             onClick()
         },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
             LightGreen
         )
