@@ -1,6 +1,7 @@
 package ru.auskov.fbkotlin.utils.firebase
 
 import android.content.ContentResolver
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
@@ -8,12 +9,14 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
+import ru.auskov.fbkotlin.R
 import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.data.Favorite
+import ru.auskov.fbkotlin.details.data.RatingData
 import ru.auskov.fbkotlin.main.utils.Categories
 import ru.auskov.fbkotlin.utils.ImageUtils
 import javax.inject.Singleton
@@ -249,14 +252,16 @@ class FirestoreManagerPaging(
             }
     }
 
-    fun insertRating(bookId: String, rating: Int) {
+    fun insertRating(bookId: String, ratingData: RatingData, context: Context) {
         if (auth.uid == null) return
 
         db.collection(FirebaseConstants.BOOK_RATING)
             .document(bookId)
             .collection(FirebaseConstants.RATING)
             .document(auth.uid!!)
-            .set(mapOf("rating" to rating))
+            //.set(mapOf("rating" to rating))
+            .set(ratingData.copy(name = auth.currentUser?.email ?:
+                context.getString(R.string.anonymous)))
     }
 
     suspend fun getRating(bookId: String): Double {

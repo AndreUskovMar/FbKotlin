@@ -14,6 +14,7 @@
     <string name="password">Пароль</string>
     <string name="email">Имейл</string>
     <string name="submit">Отправить</string>
+    <string name="anonymous">Анонимный</string>
 
     <!-- Bottom navigation -->
     <string name="home">Главная</string>
@@ -42,6 +43,7 @@
     <string name="buy_now">Купить сейчас</string>
     <string name="rate_book">Оцените эту книгу</string>
     <string name="rating">Оценка</string>
+    <string name="comment">Комментарий...</string>
 
     <!-- Add book screen -->
     <string name="save_book">Сохранить новую книгу</string>

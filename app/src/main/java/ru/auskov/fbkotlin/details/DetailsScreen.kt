@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,12 +44,15 @@ import ru.auskov.fbkotlin.R
 import ru.auskov.fbkotlin.components.CustomRatingDialog
 import ru.auskov.fbkotlin.components.RoundedButton
 import ru.auskov.fbkotlin.details.data.DetailsScreenObject
+import ru.auskov.fbkotlin.details.data.RatingData
 
 @Composable
 fun DetailsScreen(
     navData: DetailsScreenObject = DetailsScreenObject(),
     viewModel: DetailsScreenViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+
     var bitmap: Bitmap? = null
     var isVisibleRateDialog by remember {
         mutableStateOf(false)
@@ -171,9 +175,14 @@ fun DetailsScreen(
 
         CustomRatingDialog(
             isVisible = isVisibleRateDialog,
-            onSubmit = { rating ->
+            onSubmit = { rating, message ->
                 isVisibleRateDialog = false
-                viewModel.insertBookRating(bookId = navData.id, bookRating = rating)
+                val ratingData = RatingData(
+                    name = "",
+                    rating = rating,
+                    message = message
+                )
+                viewModel.insertBookRating(bookId = navData.id, ratingData, context)
             },
             onDismiss = {
                 isVisibleRateDialog = false

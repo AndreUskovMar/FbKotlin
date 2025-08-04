@@ -13,6 +13,7 @@
     <string name="password">Password</string>
     <string name="email">Email</string>
     <string name="submit">Submit</string>
+    <string name="anonymous">Anonymous</string>
 
     <!-- Bottom navigation -->
     <string name="home">Home</string>
@@ -41,6 +42,7 @@
     <string name="buy_now">Buy now</string>
     <string name="rate_book">Rate this book</string>
     <string name="rating">Rating</string>
+    <string name="comment">Comment…</string>
 
     <!-- Add book screen -->
     <string name="save_book">Save New Book</string>
