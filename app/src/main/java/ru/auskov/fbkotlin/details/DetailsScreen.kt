@@ -1,5 +1,6 @@
 package ru.auskov.fbkotlin.details
 
+import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -43,9 +46,11 @@ import coil3.compose.AsyncImage
 import ru.auskov.fbkotlin.R
 import ru.auskov.fbkotlin.components.CustomRatingDialog
 import ru.auskov.fbkotlin.components.RoundedButton
+import ru.auskov.fbkotlin.details.components.CommentsListItem
 import ru.auskov.fbkotlin.details.data.DetailsScreenObject
 import ru.auskov.fbkotlin.details.data.RatingData
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun DetailsScreen(
     navData: DetailsScreenObject = DetailsScreenObject(),
@@ -118,7 +123,7 @@ fun DetailsScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = viewModel.bookRating.value,
+                            text = String.format("%.1f", viewModel.bookRating.value.toDouble()),
                             fontWeight = FontWeight.Bold
                         )
                         Icon(
@@ -170,6 +175,15 @@ fun DetailsScreen(
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
                 )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            LazyRow {
+                items(viewModel.commentsState.value) { item ->
+                    CommentsListItem(item)
+                    Spacer(modifier = Modifier.width(5.dp))
+                }
             }
         }
 

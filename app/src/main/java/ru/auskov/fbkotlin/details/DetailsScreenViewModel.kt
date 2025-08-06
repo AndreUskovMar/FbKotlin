@@ -15,12 +15,17 @@ class DetailsScreenViewModel @Inject constructor(
     private val firestoreManagerPaging: FirestoreManagerPaging
 ): ViewModel() {
     val bookRating = mutableStateOf("0.0")
+    val commentsState = mutableStateOf(emptyList<RatingData>())
 
     fun insertBookRating(bookId: String, ratingData: RatingData, context: Context) {
         firestoreManagerPaging.insertRating(bookId, ratingData, context)
     }
 
     fun getBookRating(bookId: String) = viewModelScope.launch {
-        bookRating.value = firestoreManagerPaging.getRating(bookId).toString()
+        val ratingPair = firestoreManagerPaging.getRating(bookId)
+        if (ratingPair.second.isNotEmpty()) {
+            bookRating.value = ratingPair.first.toString()
+            commentsState.value = ratingPair.second
+        }
     }
 }

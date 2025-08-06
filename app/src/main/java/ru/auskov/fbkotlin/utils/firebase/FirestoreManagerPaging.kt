@@ -264,19 +264,16 @@ class FirestoreManagerPaging(
                 context.getString(R.string.anonymous)))
     }
 
-    suspend fun getRating(bookId: String): Double {
+    suspend fun getRating(bookId: String): Pair<Double, List<RatingData>> {
         val querySnapshot = db.collection(FirebaseConstants.BOOK_RATING)
             .document(bookId)
             .collection(FirebaseConstants.RATING)
             .get()
             .await()
 
-        val ratings = querySnapshot.documents.mapNotNull { document -> document.getLong("rating")?.toInt() }
+        val ratingsList = querySnapshot.toObjects(RatingData::class.java)
+        val averageRating = ratingsList.map { it.rating }.average()
 
-        return (if (ratings.isNotEmpty()) {
-            ratings.average()
-        } else {
-            0.0
-        })
+        return Pair(averageRating, ratingsList)
     }
 }
