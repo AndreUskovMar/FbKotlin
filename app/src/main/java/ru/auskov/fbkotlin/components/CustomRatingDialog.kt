@@ -32,16 +32,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.auskov.fbkotlin.R
+import ru.auskov.fbkotlin.details.data.RatingData
 
 @Preview(showBackground = true)
 @Composable
 fun CustomRatingDialog(
+    ratingData: RatingData = RatingData(),
     onSubmit: (Int, String) -> Unit = {_, _ ->},
     onDismiss: () -> Unit = {},
     isVisible: Boolean = true
 ) {
     var selectedRating by remember { mutableIntStateOf(0) }
     var messageState by remember { mutableStateOf("") }
+
+    selectedRating = ratingData.rating
+    messageState = ratingData.message
 
     if (isVisible) {
         AlertDialog(

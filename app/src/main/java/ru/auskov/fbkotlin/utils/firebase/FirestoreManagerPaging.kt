@@ -276,4 +276,16 @@ class FirestoreManagerPaging(
 
         return Pair(averageRating, ratingsList)
     }
+
+    suspend fun getUserRating(bookId: String): RatingData? {
+        if(auth.uid == null) return null
+        val querySnapshot = db.collection(FirebaseConstants.BOOK_RATING)
+            .document(bookId)
+            .collection(FirebaseConstants.RATING)
+            .document(auth.uid!!)
+            .get()
+            .await()
+
+        return querySnapshot.toObject(RatingData::class.java)
+    }
 }

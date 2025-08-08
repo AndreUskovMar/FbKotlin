@@ -155,6 +155,7 @@ fun DetailsScreen(
                     name = stringResource(R.string.rate_book),
                     modifier = Modifier.fillMaxWidth().weight(1f)
                 ) {
+                    viewModel.getUserRating(navData.id)
                     isVisibleRateDialog = true
                 }
             }
@@ -207,6 +208,7 @@ fun DetailsScreen(
 
         CustomRatingDialog(
             isVisible = isVisibleRateDialog,
+            ratingData = viewModel.ratingDataState.value ?: RatingData(),
             onSubmit = { rating, message ->
                 isVisibleRateDialog = false
                 val ratingData = RatingData(
