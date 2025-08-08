@@ -46,6 +46,7 @@ import coil3.compose.AsyncImage
 import ru.auskov.fbkotlin.R
 import ru.auskov.fbkotlin.components.CustomRatingDialog
 import ru.auskov.fbkotlin.components.RoundedButton
+import ru.auskov.fbkotlin.details.components.CommentsDialog
 import ru.auskov.fbkotlin.details.components.CommentsListItem
 import ru.auskov.fbkotlin.details.data.DetailsScreenObject
 import ru.auskov.fbkotlin.details.data.RatingData
@@ -61,6 +62,12 @@ fun DetailsScreen(
     var bitmap: Bitmap? = null
     var isVisibleRateDialog by remember {
         mutableStateOf(false)
+    }
+    var isVisibleCommentsDialog by remember {
+        mutableStateOf(false)
+    }
+    var ratingDataToShow by remember {
+        mutableStateOf(RatingData())
     }
 
     try {
@@ -181,11 +188,22 @@ fun DetailsScreen(
 
             LazyRow {
                 items(viewModel.commentsState.value) { item ->
-                    CommentsListItem(item)
+                    CommentsListItem(item) {
+                        ratingDataToShow = item
+                        isVisibleCommentsDialog = true
+                    }
                     Spacer(modifier = Modifier.width(5.dp))
                 }
             }
         }
+
+        CommentsDialog(
+            isShownDialog = isVisibleCommentsDialog,
+            ratingData = ratingDataToShow,
+            onDismiss = {
+                isVisibleCommentsDialog = false
+            }
+        )
 
         CustomRatingDialog(
             isVisible = isVisibleRateDialog,
