@@ -12,6 +12,8 @@ import androidx.navigation.toRoute
 import dagger.hilt.android.AndroidEntryPoint
 import ru.auskov.fbkotlin.add_book_screen.AddBookScreen
 import ru.auskov.fbkotlin.add_book_screen.data.AddBookScreenObject
+import ru.auskov.fbkotlin.admin_panel.AdminPanelScreen
+import ru.auskov.fbkotlin.admin_panel.data.AdminPanelScreenObject
 import ru.auskov.fbkotlin.ads.YandexAdsManager
 import ru.auskov.fbkotlin.details.DetailsScreen
 import ru.auskov.fbkotlin.details.data.DetailsScreenObject
@@ -19,6 +21,8 @@ import ru.auskov.fbkotlin.login.LoginScreen
 import ru.auskov.fbkotlin.login.data.LoginScreenObject
 import ru.auskov.fbkotlin.login.data.MainScreenDataObject
 import ru.auskov.fbkotlin.main.MainScreen
+import ru.auskov.fbkotlin.moderation.ModerationScreen
+import ru.auskov.fbkotlin.moderation.data.ModerationScreenObject
 import ru.auskov.fbkotlin.ui.theme.FbKotlinTheme
 import javax.inject.Inject
 
@@ -71,7 +75,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         ) {
-                            navController.navigate(AddBookScreenObject())
+                            navController.navigate(AdminPanelScreenObject)
                         }
                     }
                     composable<AddBookScreenObject> {navEntry ->
@@ -87,6 +91,19 @@ class MainActivity : ComponentActivity() {
                     composable<DetailsScreenObject> { navEntry ->
                         val navData = navEntry.toRoute<DetailsScreenObject>()
                         DetailsScreen(navData)
+                    }
+                    composable<AdminPanelScreenObject> {
+                        AdminPanelScreen(
+                            onAddBookClick = {
+                                navController.navigate(AddBookScreenObject())
+                            },
+                            onModerationClick = {
+                                navController.navigate(ModerationScreenObject)
+                            }
+                        )
+                    }
+                    composable<ModerationScreenObject> {
+                        ModerationScreen()
                     }
                 }
             }

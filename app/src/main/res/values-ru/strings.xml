@@ -43,7 +43,7 @@
     <string name="buy_now">Купить сейчас</string>
     <string name="rate_book">Оцените эту книгу</string>
     <string name="rating">Оценка</string>
-    <string name="comment">Комментарий...</string>
+    <string name="comment">Комментарий…</string>
 
     <!-- Add book screen -->
     <string name="save_book">Сохранить новую книгу</string>
@@ -51,4 +51,10 @@
     <string name="price">Цена</string>
     <string name="description">Описание</string>
     <string name="title">Название</string>
+    <string name="add_new_book">Добавить новую книгу</string>
+    <string name="comment_moderation">Модерация комментария</string>
+
+    <!-- Moderation screen -->
+    <string name="accept">Принять</string>
+    <string name="decline">Отклонить</string>
 </resources>

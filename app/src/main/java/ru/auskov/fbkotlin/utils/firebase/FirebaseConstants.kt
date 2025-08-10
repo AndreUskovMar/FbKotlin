@@ -12,4 +12,5 @@ object FirebaseConstants {
     const val BOOK_IMAGES = "book_images"
     const val BOOK_RATING = "book_rating"
     const val RATING = "rating"
+    const val MODERATION_RATING = "moderation_rating"
 }

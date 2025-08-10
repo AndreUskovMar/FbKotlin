@@ -255,13 +255,21 @@ class FirestoreManagerPaging(
     fun insertRating(bookId: String, ratingData: RatingData, context: Context) {
         if (auth.uid == null) return
 
-        db.collection(FirebaseConstants.BOOK_RATING)
-            .document(bookId)
-            .collection(FirebaseConstants.RATING)
+        db.collection(FirebaseConstants.MODERATION_RATING)
             .document(auth.uid!!)
-            //.set(mapOf("rating" to rating))
-            .set(ratingData.copy(name = auth.currentUser?.email ?:
-                context.getString(R.string.anonymous)))
+            .set(ratingData.copy(
+                name = auth.currentUser?.email ?: context.getString(R.string.anonymous),
+                uid = auth.uid!!,
+                bookId = bookId
+            ))
+    }
+
+    fun insertModerationRating(ratingData: RatingData) {
+        db.collection(FirebaseConstants.BOOK_RATING)
+            .document(ratingData.bookId)
+            .collection(FirebaseConstants.RATING)
+            .document(ratingData.uid)
+            .set(ratingData)
     }
 
     suspend fun getRating(bookId: String): Pair<Double, List<RatingData>> {
@@ -287,5 +295,19 @@ class FirestoreManagerPaging(
             .await()
 
         return querySnapshot.toObject(RatingData::class.java)
+    }
+
+    suspend fun getCommentsToModeration(): List<RatingData> {
+        val querySnapshot = db.collection(FirebaseConstants.MODERATION_RATING)
+            .get()
+            .await()
+
+        return querySnapshot.toObjects(RatingData::class.java)
+    }
+
+    fun deleteModerationComment(uid: String) {
+        db.collection(FirebaseConstants.MODERATION_RATING)
+            .document(uid)
+            .delete()
     }
 }

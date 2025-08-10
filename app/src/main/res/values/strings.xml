@@ -50,4 +50,10 @@
     <string name="price">Price</string>
     <string name="description">Description</string>
     <string name="title">Title</string>
+    <string name="add_new_book">Add new book</string>
+    <string name="comment_moderation">Comment moderation</string>
+
+    <!-- Moderation screen -->
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
 </resources>
