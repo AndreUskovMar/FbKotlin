@@ -14,7 +14,6 @@ import javax.inject.Inject
 class DetailsScreenViewModel @Inject constructor(
     private val firestoreManagerPaging: FirestoreManagerPaging
 ): ViewModel() {
-    val bookRating = mutableStateOf("0.0")
     val commentsState = mutableStateOf(emptyList<RatingData>())
     val ratingDataState = mutableStateOf<RatingData?>(RatingData())
 
@@ -22,12 +21,8 @@ class DetailsScreenViewModel @Inject constructor(
         firestoreManagerPaging.insertRating(bookId, ratingData, context)
     }
 
-    fun getBookRating(bookId: String) = viewModelScope.launch {
-        val ratingPair = firestoreManagerPaging.getRating(bookId)
-        if (ratingPair.second.isNotEmpty()) {
-            bookRating.value = ratingPair.first.toString()
-            commentsState.value = ratingPair.second
-        }
+    fun getBookComments(bookId: String) = viewModelScope.launch {
+        commentsState.value = firestoreManagerPaging.getBookComments(bookId)
     }
 
     fun getUserRating(bookId: String) = viewModelScope.launch {

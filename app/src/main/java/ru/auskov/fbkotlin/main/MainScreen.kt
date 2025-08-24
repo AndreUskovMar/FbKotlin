@@ -39,8 +39,8 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
 import ru.auskov.fbkotlin.R
 import ru.auskov.fbkotlin.components.CustomAlertDialog
@@ -243,9 +243,9 @@ fun MainScreen(
 }
 
 fun isAdmin(onAdmin: (Boolean) -> Unit) {
-    val uid = com.google.firebase.ktx.Firebase.auth.currentUser!!.uid
+    val uid = com.google.firebase.Firebase.auth.currentUser!!.uid
 
-    com.google.firebase.ktx.Firebase.firestore.collection("admin")
+    com.google.firebase.Firebase.firestore.collection("admin")
         .document(uid).get().addOnSuccessListener {
             Log.d("MyLog", "is admin: ${it.get("isAdmin")}")
 

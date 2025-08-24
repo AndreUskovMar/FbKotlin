@@ -77,12 +77,14 @@ fun DetailsScreen(
         Log.d("MyLog", e.message.toString())
     }
 
-    LaunchedEffect(key1 = Unit){
-        viewModel.getBookRating(navData.id)
+    LaunchedEffect(key1 = Unit) {
+        viewModel.getBookComments(navData.id)
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(vertical = 50.dp, horizontal = 10.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(vertical = 50.dp, horizontal = 10.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column(
@@ -92,7 +94,8 @@ fun DetailsScreen(
                 AsyncImage(
                     model = bitmap ?: navData.imageUrl,
                     contentDescription = navData.title,
-                    modifier = Modifier.fillMaxWidth(0.5f)
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
                         .height(200.dp)
                         .clip(RoundedCornerShape(20.dp))
                         .background(Color.LightGray),
@@ -101,8 +104,10 @@ fun DetailsScreen(
 
                 Spacer(modifier = Modifier.width(15.dp))
 
-                Column(modifier = Modifier.fillMaxWidth()
-                    .height(190.dp)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(190.dp)
                 ) {
                     Text(
                         text = stringResource(R.string.creator),
@@ -126,11 +131,18 @@ fun DetailsScreen(
                         text = stringResource(R.string.rating),
                         color = Color.Gray
                     )
-                    Row (
+                    Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = String.format("%.1f", viewModel.bookRating.value.toDouble()),
+                            text = if (navData.ratingList.isEmpty()) {
+                                "-- (0)"
+                            } else {
+                                String.format(
+                                    "%.1f",
+                                    navData.ratingList.average()
+                                ) + " (${navData.ratingList.size})"
+                            },
                             fontWeight = FontWeight.Bold
                         )
                         Icon(
@@ -148,12 +160,16 @@ fun DetailsScreen(
             Row {
                 RoundedButton(
                     name = stringResource(R.string.buy_now),
-                    modifier = Modifier.fillMaxWidth().weight(1f)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
                 ) { }
                 Spacer(modifier = Modifier.width(20.dp))
                 RoundedButton(
                     name = stringResource(R.string.rate_book),
-                    modifier = Modifier.fillMaxWidth().weight(1f)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
                 ) {
                     viewModel.getUserRating(navData.id)
                     isVisibleRateDialog = true
@@ -214,7 +230,8 @@ fun DetailsScreen(
                 val ratingData = RatingData(
                     name = "",
                     rating = rating,
-                    message = message
+                    message = message,
+                    lastRating = viewModel.ratingDataState.value?.lastRating ?: 0
                 )
                 viewModel.insertBookRating(bookId = navData.id, ratingData, context)
             },

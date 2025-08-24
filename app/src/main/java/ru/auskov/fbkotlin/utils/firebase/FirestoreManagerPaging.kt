@@ -264,25 +264,41 @@ class FirestoreManagerPaging(
             ))
     }
 
-    fun insertModerationRating(ratingData: RatingData) {
+    suspend fun insertModerationRating(ratingData: RatingData) {
         db.collection(FirebaseConstants.BOOK_RATING)
             .document(ratingData.bookId)
             .collection(FirebaseConstants.RATING)
             .document(ratingData.uid)
             .set(ratingData)
+
+        val book: Book = db.collection(FirebaseConstants.BOOKS)
+            .document(ratingData.bookId)
+            .get()
+            .await()
+            .toObject(Book::class.java) ?: return
+
+        val ratingsList = book.ratingList.toMutableList()
+
+        if (ratingData.lastRating == 0) {
+            ratingsList.add(ratingData.rating)
+        } else {
+            val index = ratingsList.indexOf(ratingData.lastRating)
+            ratingsList[index] = ratingData.rating
+        }
+
+        db.collection(FirebaseConstants.BOOKS)
+            .document(ratingData.bookId)
+            .update("ratingList", ratingsList)
     }
 
-    suspend fun getRating(bookId: String): Pair<Double, List<RatingData>> {
+    suspend fun getBookComments(bookId: String): List<RatingData> {
         val querySnapshot = db.collection(FirebaseConstants.BOOK_RATING)
             .document(bookId)
             .collection(FirebaseConstants.RATING)
             .get()
             .await()
 
-        val ratingsList = querySnapshot.toObjects(RatingData::class.java)
-        val averageRating = ratingsList.map { it.rating }.average()
-
-        return Pair(averageRating, ratingsList)
+        return querySnapshot.toObjects(RatingData::class.java)
     }
 
     suspend fun getUserRating(bookId: String): RatingData? {

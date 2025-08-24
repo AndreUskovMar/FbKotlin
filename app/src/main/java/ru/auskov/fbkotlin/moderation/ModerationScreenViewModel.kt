@@ -15,7 +15,7 @@ class ModerationScreenViewModel @Inject constructor(
 ): ViewModel() {
     val commentsState = mutableStateOf(emptyList<RatingData>())
 
-    fun insertBookRating(ratingData: RatingData) {
+    fun insertBookRating(ratingData: RatingData) = viewModelScope.launch {
         firestoreManagerPaging.insertModerationRating(ratingData)
         removeCommentFromModeration(ratingData.uid)
     }

@@ -10,5 +10,6 @@ data class Book(
     val categoryIndex: Int = Categories.FANTASY,
     val price: Int = 0,
     val imageUrl: String = "",
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val ratingList: List<Int> = emptyList()
 )

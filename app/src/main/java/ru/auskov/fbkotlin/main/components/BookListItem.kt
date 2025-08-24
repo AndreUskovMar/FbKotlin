@@ -1,19 +1,26 @@
 package ru.auskov.fbkotlin.main.components
 
+import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -33,6 +40,7 @@ import ru.auskov.fbkotlin.data.Book
 import ru.auskov.fbkotlin.main.utils.Categories
 import ru.auskov.fbkotlin.utils.toBitmap
 
+@SuppressLint("DefaultLocale")
 @Preview(showBackground = true)
 @Composable
 fun BookListItem(
@@ -41,7 +49,8 @@ fun BookListItem(
         name = "Title",
         description = "Description",
         categoryIndex = Categories.FANTASY,
-        price = 100
+        price = 100,
+        ratingList = listOf(2, 4)
     ),
     onEditBook: (Book) -> Unit = {},
     onDeleteBook: (Book) -> Unit = {},
@@ -56,15 +65,54 @@ fun BookListItem(
                 onBookClick()
             }
     ) {
-        AsyncImage(
-            model = book.imageUrl.toBitmap() ?: book.imageUrl,
-            contentDescription = "Bonevtik Potujniy",
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(230.dp)
-                .clip(RoundedCornerShape(15.dp)),
-            contentScale = ContentScale.Crop
-        )
+                .height(230.dp),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            AsyncImage(
+                model = book.imageUrl.toBitmap() ?: book.imageUrl,
+                contentDescription = "Bonevtik Potujniy",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(15.dp)),
+                contentScale = ContentScale.Crop
+            )
+
+            Box(
+                modifier = Modifier.padding(5.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(15.dp))
+                        .background(Color.Green)
+                        .padding(horizontal = 10.dp, vertical = 3.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (book.ratingList.isEmpty()) {
+                            "--"
+                        } else {
+                            String.format("%.1f", book.ratingList.average())
+                        },
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Blue
+                    )
+
+                    Spacer(modifier = Modifier.width(5.dp))
+
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        modifier = Modifier.size(15.dp),
+                        contentDescription = "Star",
+                        tint = Color.Yellow
+                    )
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -96,7 +144,9 @@ fun BookListItem(
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Blue,
-                modifier = Modifier.fillMaxWidth().weight(1f)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             )
 
             IconButton(

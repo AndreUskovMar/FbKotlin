@@ -57,7 +57,8 @@ class MainActivity : ComponentActivity() {
                                             title = book.name,
                                             description = book.description,
                                             price = book.price.toString(),
-                                            imageUrl = book.imageUrl
+                                            imageUrl = book.imageUrl,
+                                            ratingList = book.ratingList
                                         )
                                     )
                                 }
