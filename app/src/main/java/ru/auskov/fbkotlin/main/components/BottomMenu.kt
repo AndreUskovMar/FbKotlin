@@ -17,6 +17,7 @@ fun BottomMenu(
     selectedItem: Int,
     onHomeClick: () -> Unit,
     onFavoritesClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     val items = listOf(
         BottomMenuItem.Home,
@@ -34,6 +35,7 @@ fun BottomMenu(
                     when(item.titleId) {
                         BottomMenuItem.Home.titleId -> onHomeClick()
                         BottomMenuItem.Favourites.titleId -> onFavoritesClick()
+                        BottomMenuItem.Settings.titleId -> onSettingsClick()
                     }
                 },
                 icon = {

@@ -54,6 +54,7 @@ import ru.auskov.fbkotlin.main.components.DrawerHeader
 import ru.auskov.fbkotlin.main.components.DrawerList
 import ru.auskov.fbkotlin.main.components.MainTopBar
 import ru.auskov.fbkotlin.main.utils.Categories
+import ru.auskov.fbkotlin.settings.SettingsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -162,8 +163,20 @@ fun MainScreen(
                 viewModel.selectedItemState.intValue = BottomMenuItem.Favourites.titleId
                 viewModel.getBooksByCategory(Categories.FAVORITES)
                 books.refresh()
+            }, onSettingsClick = {
+                viewModel.selectedItemState.intValue = BottomMenuItem.Settings.titleId
             })
         }) { paddingValue ->
+            if (viewModel.selectedItemState.intValue == BottomMenuItem.Settings.titleId) {
+                Column(
+                    modifier = Modifier.padding(paddingValue),
+                ) {
+                    SettingsScreen()
+                }
+
+                return@Scaffold
+            }
+
             if (books.itemCount == 0 && books.loadState.refresh is LoadState.NotLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
