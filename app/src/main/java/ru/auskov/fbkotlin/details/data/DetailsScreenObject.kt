@@ -1,6 +1,7 @@
 package ru.auskov.fbkotlin.details.data
 
 import kotlinx.serialization.Serializable
+import ru.auskov.fbkotlin.comments_screen.CommentsNavData
 
 @Serializable
 data class DetailsScreenObject(
@@ -10,4 +11,10 @@ data class DetailsScreenObject(
     val imageUrl: String = "",
     val price: String = "",
     val ratingList: List<Int> = emptyList(),
+)
+
+fun DetailsScreenObject.toCommentsNavData() = CommentsNavData(
+    id = id,
+    title = title,
+    ratingList = ratingList
 )

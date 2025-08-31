@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -21,11 +20,14 @@ import ru.auskov.fbkotlin.details.data.RatingData
 
 @Composable
 fun CommentsListItem(
+    modifier: Modifier = Modifier,
     item: RatingData,
+    numberOfLines: Int = Int.MAX_VALUE,
+    textOverflow: TextOverflow = TextOverflow.Clip,
     onPress: () -> Unit
 ) {
     Card(
-        modifier = Modifier.width(310.dp).height(150.dp).clickable{
+        modifier = modifier.height(150.dp).clickable{
             onPress()
         },
         colors = CardDefaults.cardColors(Color.White)
@@ -42,7 +44,7 @@ fun CommentsListItem(
                 color = Color.Blue
             )
             Spacer(modifier = Modifier.height(5.dp))
-            Text(text = item.message, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(text = item.message, maxLines = numberOfLines, overflow = textOverflow)
         }
     }
 }

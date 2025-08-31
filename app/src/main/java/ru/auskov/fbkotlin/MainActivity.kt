@@ -15,6 +15,8 @@ import ru.auskov.fbkotlin.add_book_screen.data.AddBookScreenObject
 import ru.auskov.fbkotlin.admin_panel.AdminPanelScreen
 import ru.auskov.fbkotlin.admin_panel.data.AdminPanelScreenObject
 import ru.auskov.fbkotlin.ads.YandexAdsManager
+import ru.auskov.fbkotlin.comments_screen.CommentsNavData
+import ru.auskov.fbkotlin.comments_screen.CommentsScreen
 import ru.auskov.fbkotlin.details.DetailsScreen
 import ru.auskov.fbkotlin.details.data.DetailsScreenObject
 import ru.auskov.fbkotlin.login.LoginScreen
@@ -91,7 +93,9 @@ class MainActivity : ComponentActivity() {
                     }
                     composable<DetailsScreenObject> { navEntry ->
                         val navData = navEntry.toRoute<DetailsScreenObject>()
-                        DetailsScreen(navData)
+                        DetailsScreen(navData) { commentsNavData ->
+                            navController.navigate(commentsNavData)
+                        }
                     }
                     composable<AdminPanelScreenObject> {
                         AdminPanelScreen(
@@ -105,6 +109,10 @@ class MainActivity : ComponentActivity() {
                     }
                     composable<ModerationScreenObject> {
                         ModerationScreen()
+                    }
+                    composable<CommentsNavData> { navEntry ->
+                        val navData = navEntry.toRoute<CommentsNavData>()
+                        CommentsScreen(navData)
                     }
                 }
             }

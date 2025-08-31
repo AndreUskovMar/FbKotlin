@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,24 +39,28 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.Bitmap
 import coil3.compose.AsyncImage
 import ru.auskov.fbkotlin.R
+import ru.auskov.fbkotlin.comments_screen.CommentsNavData
 import ru.auskov.fbkotlin.components.CustomRatingDialog
 import ru.auskov.fbkotlin.components.RoundedButton
 import ru.auskov.fbkotlin.details.components.CommentsDialog
 import ru.auskov.fbkotlin.details.components.CommentsListItem
 import ru.auskov.fbkotlin.details.data.DetailsScreenObject
 import ru.auskov.fbkotlin.details.data.RatingData
+import ru.auskov.fbkotlin.details.data.toCommentsNavData
 
 @SuppressLint("DefaultLocale")
 @Composable
 fun DetailsScreen(
     navData: DetailsScreenObject = DetailsScreenObject(),
-    viewModel: DetailsScreenViewModel = hiltViewModel()
+    viewModel: DetailsScreenViewModel = hiltViewModel(),
+    onRatingsClick: (CommentsNavData) -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -132,7 +137,10 @@ fun DetailsScreen(
                         color = Color.Gray
                     )
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable {
+                            onRatingsClick(navData.toCommentsNavData())
+                        }
                     ) {
                         Text(
                             text = if (navData.ratingList.isEmpty()) {
@@ -205,7 +213,12 @@ fun DetailsScreen(
 
             LazyRow {
                 items(viewModel.commentsState.value) { item ->
-                    CommentsListItem(item) {
+                    CommentsListItem(
+                        modifier = Modifier.width(310.dp),
+                        item = item,
+                        numberOfLines = 2,
+                        textOverflow = TextOverflow.Ellipsis
+                    ) {
                         ratingDataToShow = item
                         isVisibleCommentsDialog = true
                     }
