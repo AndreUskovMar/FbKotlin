@@ -9,4 +9,20 @@
         <item>Название</item>
         <item>Цена</item>
     </string-array>
+    <string-array name="personal_data_array">
+        <item>Имя</item>
+        <item>Номер телефона</item>
+    </string-array>
+    <string-array name="address_array">
+        <item>Город</item>
+        <item>Улица</item>
+        <item>Квартира</item>
+    </string-array>
+    <string-array name="password_array">
+        <item>Почта</item>
+    </string-array>
+    <string-array name="delete_account_array">
+        <item>Почта</item>
+        <item>Пароль</item>
+    </string-array>
 </resources>

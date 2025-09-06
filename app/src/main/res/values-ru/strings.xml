@@ -15,6 +15,8 @@
     <string name="email">Имейл</string>
     <string name="submit">Отправить</string>
     <string name="anonymous">Анонимный</string>
+    <string name="back">Назад</string>
+    <string name="save">Сохранить</string>
 
     <!-- Bottom navigation -->
     <string name="home">Главная</string>
@@ -57,4 +59,14 @@
     <!-- Moderation screen -->
     <string name="accept">Принять</string>
     <string name="decline">Отклонить</string>
+
+    <!-- Settings screen -->
+    <string name="account_settings">Настройки Аккаунта</string>
+    <string name="change_password">Изменить Пароль</string>
+    <string name="change_name">Изменить Имя</string>
+    <string name="change_address">Изменить Адресс</string>
+    <string name="delete_account">Удалить Аккаунт</string>
+    <string name="image_settings">Настройки Изображения</string>
+    <string name="image_format">Формат Картинки</string>
+    <string name="image_quality">Качество Картинки</string>
 </resources>

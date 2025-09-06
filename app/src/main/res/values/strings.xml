@@ -14,6 +14,8 @@
     <string name="email">Email</string>
     <string name="submit">Submit</string>
     <string name="anonymous">Anonymous</string>
+    <string name="back">Back</string>
+    <string name="save">Save</string>
 
     <!-- Bottom navigation -->
     <string name="home">Home</string>
@@ -56,4 +58,14 @@
     <!-- Moderation screen -->
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
+
+    <!-- Settings screen -->
+    <string name="account_settings">Account Settings</string>
+    <string name="change_password">Change Password</string>
+    <string name="change_name">Change Yor Name</string>
+    <string name="change_address">Change Address</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="image_settings">Image Settings</string>
+    <string name="image_format">Image Format</string>
+    <string name="image_quality">Image Quality</string>
 </resources>

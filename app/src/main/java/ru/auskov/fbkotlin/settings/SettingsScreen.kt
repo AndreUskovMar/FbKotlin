@@ -11,27 +11,46 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 // import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.auskov.fbkotlin.R
+import ru.auskov.fbkotlin.components.CustomAccountsDialog
+import ru.auskov.fbkotlin.components.RoundedButton
+import ru.auskov.fbkotlin.data.AccountDialog
 import ru.auskov.fbkotlin.settings.components.MenuCategoryItem
 import ru.auskov.fbkotlin.settings.components.MenuListItem
 import ru.auskov.fbkotlin.settings.components.MenuUiItem
 
 // @Preview(showBackground = true)
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(
+    onBackClick: () -> Unit = {}
+) {
+    var dialogData by remember {
+        mutableStateOf(AccountDialog())
+    }
+
     Column(
-        modifier = Modifier.fillMaxSize().padding(10.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp)
     ) {
         Card(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(10.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
             ) {
                 Text(
                     "Андрей Усков",
@@ -52,20 +71,52 @@ fun SettingsScreen() {
         Spacer(Modifier.height(10.dp))
 
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
         ) {
             LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(10.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp)
             ) {
                 items(MenuListItem.menuItemsList) { item ->
                     if (item.isCategory) {
-                        MenuCategoryItem(item.title)
-                        Spacer(Modifier.height(10.dp))
+                        MenuCategoryItem(stringResource(item.title))
                     } else {
-                        MenuUiItem(item)
+                        MenuUiItem(item) { dialogType, fieldLabelsList ->
+                            dialogData = AccountDialog(
+                                title = item.title,
+                                isShownDialog = true,
+                                dialogType = dialogType,
+                                fieldLabels = fieldLabelsList
+                            )
+                        }
                     }
                 }
             }
         }
+
+        RoundedButton(
+            name = stringResource(R.string.save),
+            modifier = Modifier.fillMaxWidth()
+        ) { }
+
+        RoundedButton(
+            name = stringResource(R.string.back),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            onBackClick()
+        }
+
+        CustomAccountsDialog(
+            dialogData = dialogData,
+            onConfirm = { listFieldsValues ->
+                dialogData = AccountDialog(isShownDialog = false)
+            },
+            onDismiss = {
+                dialogData = AccountDialog(isShownDialog = false)
+            }
+        )
     }
 }

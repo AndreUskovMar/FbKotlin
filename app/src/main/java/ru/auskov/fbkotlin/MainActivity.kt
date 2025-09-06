@@ -117,7 +117,11 @@ class MainActivity : ComponentActivity() {
                         CommentsScreen(navData)
                     }
                     composable<SettingsScreenObject> {
-                        SettingsScreen()
+                        SettingsScreen(
+                            onBackClick = {
+                                navController.popBackStack()
+                            }
+                        )
                     }
                 }
             }

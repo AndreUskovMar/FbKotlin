@@ -9,4 +9,20 @@
         <item>Name</item>
         <item>Price</item>
     </string-array>
+    <string-array name="personal_data_array">
+        <item>Name</item>
+        <item>Phone Number</item>
+    </string-array>
+    <string-array name="address_array">
+        <item>City</item>
+        <item>Street</item>
+        <item>Flat</item>
+    </string-array>
+    <string-array name="password_array">
+        <item>Email</item>
+    </string-array>
+    <string-array name="delete_account_array">
+        <item>Email</item>
+        <item>Password</item>
+    </string-array>
 </resources>
