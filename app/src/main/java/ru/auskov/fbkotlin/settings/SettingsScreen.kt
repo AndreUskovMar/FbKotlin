@@ -12,6 +12,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,7 +29,9 @@ import ru.auskov.fbkotlin.components.RoundedButton
 import ru.auskov.fbkotlin.data.AccountDialog
 import ru.auskov.fbkotlin.settings.components.MenuCategoryItem
 import ru.auskov.fbkotlin.settings.components.MenuListItem
-import ru.auskov.fbkotlin.settings.components.MenuUiItem
+import ru.auskov.fbkotlin.settings.components.DialogMenuItem
+import ru.auskov.fbkotlin.settings.components.DropDownMenuItem
+import ru.auskov.fbkotlin.settings.data.MenuItem
 
 // @Preview(showBackground = true)
 @Composable
@@ -37,6 +40,10 @@ fun SettingsScreen(
 ) {
     var dialogData by remember {
         mutableStateOf(AccountDialog())
+    }
+
+    val selectedDropDownMenuOptions = remember {
+        mutableStateListOf(0,0,0)
     }
 
     Column(
@@ -81,15 +88,27 @@ fun SettingsScreen(
                     .padding(10.dp)
             ) {
                 items(MenuListItem.menuItemsList) { item ->
-                    if (item.isCategory) {
-                        MenuCategoryItem(stringResource(item.title))
-                    } else {
-                        MenuUiItem(item) { dialogType, fieldLabelsList ->
-                            dialogData = AccountDialog(
-                                title = item.title,
-                                isShownDialog = true,
-                                dialogType = dialogType,
-                                fieldLabels = fieldLabelsList
+                    when(item) {
+                        is MenuItem.CategoryItem -> {
+                            MenuCategoryItem(stringResource(item.title))
+                        }
+                        is MenuItem.DialogItem -> {
+                            DialogMenuItem(item) { dialogType, fieldLabelsList ->
+                                dialogData = AccountDialog(
+                                    title = item.title,
+                                    isShownDialog = true,
+                                    dialogType = dialogType,
+                                    fieldLabels = fieldLabelsList
+                                )
+                            }
+                        }
+                        is MenuItem.DropDownItem -> {
+                            DropDownMenuItem(
+                                item,
+                                selectedOption = selectedDropDownMenuOptions[item.menuType.ordinal],
+                                onOptionSelected = { selectedIndex ->
+                                    selectedDropDownMenuOptions[item.menuType.ordinal] = selectedIndex
+                                }
                             )
                         }
                     }
@@ -100,14 +119,16 @@ fun SettingsScreen(
         RoundedButton(
             name = stringResource(R.string.save),
             modifier = Modifier.fillMaxWidth()
-        ) { }
-
-        RoundedButton(
-            name = stringResource(R.string.back),
-            modifier = Modifier.fillMaxWidth()
         ) {
             onBackClick()
         }
+
+//        RoundedButton(
+//            name = stringResource(R.string.back),
+//            modifier = Modifier.fillMaxWidth()
+//        ) {
+//            onBackClick()
+//        }
 
         CustomAccountsDialog(
             dialogData = dialogData,

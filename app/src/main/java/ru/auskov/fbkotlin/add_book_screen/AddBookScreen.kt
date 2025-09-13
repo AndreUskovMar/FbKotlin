@@ -1,5 +1,6 @@
 package ru.auskov.fbkotlin.add_book_screen
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -40,6 +41,7 @@ import ru.auskov.fbkotlin.utils.ImageUtils
 import ru.auskov.fbkotlin.utils.firebase.IS_BASE64
 import ru.auskov.fbkotlin.utils.toBitmap
 
+@SuppressLint("LocalContextResourcesRead")
 @Composable
 fun AddBookScreen(
     navData: AddBookScreenObject = AddBookScreenObject(),
@@ -58,6 +60,10 @@ fun AddBookScreen(
 
     val isShownIndicator = remember {
         mutableStateOf(false)
+    }
+
+    val categories = remember {
+        context.resources.getStringArray(R.array.category_array)
     }
 
     val imageLauncher = rememberLauncherForActivityResult(
@@ -132,7 +138,8 @@ fun AddBookScreen(
         )
 
         RoundedDropDownMenu(
-            categoryIndex = viewModel.categoryIndex.intValue,
+            options = categories.toList(),
+            selectedOption = categories[viewModel.categoryIndex.intValue],
             onOptionSelected = { selectedCategoryIndex ->
                 viewModel.categoryIndex.intValue = selectedCategoryIndex
             }

@@ -25,4 +25,20 @@
         <item>Почта</item>
         <item>Пароль</item>
     </string-array>
+    <string-array name="image_format_array">
+        <item>WEBP_LOSSY</item>
+        <item>WEBP_LOSSLESS</item>
+        <item>PNG</item>
+        <item>JPEG</item>
+    </string-array>
+    <string-array name="image_quality_array">
+        <item>НИЗКОЕ</item>
+        <item>СРЕДНЕЕ</item>
+        <item>ВЫСОКОЕ</item>
+    </string-array>
+    <string-array name="image_size_array">
+        <item>100</item>
+        <item>300</item>
+        <item>500</item>
+    </string-array>
 </resources>

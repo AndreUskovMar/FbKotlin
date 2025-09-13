@@ -16,23 +16,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.unit.dp
-import ru.auskov.fbkotlin.R
 import ru.auskov.fbkotlin.ui.theme.LightGreen
 
 @Composable
 fun RoundedDropDownMenu(
-    categoryIndex: Int,
+    options: List<String>,
+    selectedOption: String,
     onOptionSelected: (Int) -> Unit
 ) {
-    val listItems = stringArrayResource(R.array.category_array)
-
     val expanded = remember {
         mutableStateOf(false)
     }
-
-    val categoryOption = listItems[categoryIndex]
 
     Box (
         modifier = Modifier
@@ -45,20 +40,19 @@ fun RoundedDropDownMenu(
             }
             .padding(horizontal = 15.dp, vertical = 17.dp)
     ) {
-        Text(categoryOption)
+        Text(selectedOption)
         DropdownMenu(
             expanded = expanded.value,
             onDismissRequest = {
                 expanded.value = false
             }
         ) {
-            listItems.forEachIndexed { index, option ->
+            options.forEachIndexed { index, option ->
                 DropdownMenuItem(
                     text = {
                         Text(option)
                     },
                     onClick = {
-                        // selectedItem.value = option
                         expanded.value = false
                         onOptionSelected(index)
                     }
