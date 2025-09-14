@@ -25,8 +25,6 @@ import ru.auskov.fbkotlin.login.data.MainScreenDataObject
 import ru.auskov.fbkotlin.main.MainScreen
 import ru.auskov.fbkotlin.moderation.ModerationScreen
 import ru.auskov.fbkotlin.moderation.data.ModerationScreenObject
-import ru.auskov.fbkotlin.settings.SettingsScreen
-import ru.auskov.fbkotlin.settings.data.SettingsScreenObject
 import ru.auskov.fbkotlin.ui.theme.FbKotlinTheme
 import javax.inject.Inject
 
@@ -78,6 +76,12 @@ class MainActivity : ComponentActivity() {
                                         imageUrl = book.imageUrl,
                                     )
                                 )
+                            },
+                            onCloseAccountClick = {
+                                navController.popBackStack(
+                                    LoginScreenObject,
+                                    inclusive = false,
+                                )
                             }
                         ) {
                             navController.navigate(AdminPanelScreenObject)
@@ -115,13 +119,6 @@ class MainActivity : ComponentActivity() {
                     composable<CommentsNavData> { navEntry ->
                         val navData = navEntry.toRoute<CommentsNavData>()
                         CommentsScreen(navData)
-                    }
-                    composable<SettingsScreenObject> {
-                        SettingsScreen(
-                            onBackClick = {
-                                navController.popBackStack()
-                            }
-                        )
                     }
                 }
             }

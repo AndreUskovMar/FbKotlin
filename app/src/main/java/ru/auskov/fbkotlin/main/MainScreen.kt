@@ -63,6 +63,7 @@ fun MainScreen(
     navData: MainScreenDataObject,
     onBookClick: (Book) -> Unit,
     onBookEditClick: (Book) -> Unit,
+    onCloseAccountClick: () -> Unit,
     onAdminClick: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -171,7 +172,11 @@ fun MainScreen(
                 Column(
                     modifier = Modifier.padding(paddingValue),
                 ) {
-                    SettingsScreen()
+                    SettingsScreen(
+                        onCloseAccountClick = {
+                            onCloseAccountClick()
+                        }
+                    )
                 }
 
                 return@Scaffold
